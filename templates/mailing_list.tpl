@@ -2,7 +2,7 @@
 
 <div class="listing users">
 	<div class="header">
-		<h1>{tr}Mailing List{/tr}: {$board->getDisplayLink()}</h1>
+		<h1>Mailing List: {$board->getDisplayLink()}</h1>
 	</div>
 
 	<div class="body">
@@ -23,10 +23,10 @@
 		{formlabel label="Subscribe"}
 		{forminput}
 			{if mailman_findmember($board->getPreference('boards_mailing_list'),$gBitUser->getField('email'))}
-				<p>{tr}You are currently subscribed to the mailing list using the email:{/tr} {$gBitUser->getField('email')}</p>
+				<p>You are currently subscribed to the mailing list using the email: {$gBitUser->getField('email')}</p>
 				<input type="submit" class="btn btn-default" name="unsubscribe" value="Unsubscribe" />
 			{else}
-				<p>{tr}You are currently not subscribed to the mailing list.{/tr}</p>
+				<p>You are currently not subscribed to the mailing list.</p>
 				<input type="submit" class="btn btn-default" name="subscribe" value="Subscribe" />
 			{/if}
 		{/forminput}
@@ -45,7 +45,7 @@
 			{foreach from=$listMembers key=userId item=member}
 				<li>{displayname email=$member} &lt;{$member}&gt;</li>
 			{foreachelse}
-				<li>{tr}The group has no members.{/tr}</li>
+				<li>The group has no members.</li>
 			{/foreach}
 		</ol>
 {/jstab}
@@ -67,7 +67,7 @@
 		{formlabel label="Mailing List Address" for="boardsync"}
 		{forminput}
 			<input type="text" size="50" maxlength="200" name="board_sync_list_address" id="board_sync_list_address" value="{$gContent->getPreference('board_sync_list_address')|escape}" />
-			{if $boardsMailingList && $boardsMailingList != $gContent->getPreference('board_sync_list_address')}
+			{if $boardsMailingList and $boardsMailingList != $gContent->getPreference('board_sync_list_address')}
 				{formfeedback warning="The Mailing List Address does not match the configured board mailing list."}
 			{/if}
 			{formhelp note="All messages posted to this email address will mirrored on the board. The 'Board Sync Inbox' email account must be subscribed to this list and receive the messages in its INBOX."}
@@ -86,10 +86,10 @@
 		{formlabel label="Subscribe"}
 		{forminput}
 			{if mailman_findmember($board->getPreference('boards_mailing_list'),$boardSyncInbox)}
-				<p>{$boardSyncInbox} {tr}is subscribed to{/tr} {$boardsMailingList}</p>
+				<p>{$boardSyncInbox} is subscribed to {$boardsMailingList}</p>
 				<input type="submit" class="btn btn-default" name="unsubscribe_boardsync" value="Unsubscribe" />
 			{else}
-				<p>{$boardSyncInbox} {tr}is currently not subscribed to the mailing list.{/tr}</p>
+				<p>{$boardSyncInbox} is currently not subscribed to the mailing list.</p>
 				<input type="submit" class="btn btn-default" name="subscribe_boardsync" value="Subscribe" />
 			{/if}
 		{/forminput}
@@ -99,8 +99,8 @@
 	<div class="form-group">
 		{formlabel label="Board Sync" for="boardsync"}
 		{forminput}
-		{tr}Board Sync is not available since the Board Sync master email box has not been configured.{/tr} {if !$gBitUser->isAdmin()}{tr}Check with your site administrator.{/tr}{/if}
-			{if $gBitUser->isAdmin()}{tr}See the global <a href="{$smarty.const.KERNEL_PKG_URL}admin/index.php?page=boards">Board Settings</a> for master email box configuration.{/tr}{/if}
+		Board Sync is not available since the Board Sync master email box has not been configured. {if !$gBitUser->isAdmin()}Check with your site administrator.{/if}
+			{if $gBitUser->isAdmin()}See the global <a href="{$smarty.const.KERNEL_PKG_URL}admin/index.php?page=boards">Board Settings</a> for master email box configuration.{/if}
 		{/forminput}
 	</div>
 	{/if}
@@ -130,7 +130,7 @@
 		{/forminput}
 	</div>
 {else}
-	{if $gBitSystem->getConfig('server_mailman_bin') && $gBitSystem->getConfig('boards_sync_user') && $gBitSystem->getConfig('boards_sync_mail_server')}
+	{if $gBitSystem->getConfig('server_mailman_bin') and $gBitSystem->getConfig('boards_sync_user') and $gBitSystem->getConfig('boards_sync_mail_server')}
 {legend legend="Group Mailing List"}
 	<input type="hidden" name="b" value="{$board->getField('board_id')}"/>
 	<div class="form-group">
@@ -157,11 +157,11 @@
 		{if !$gBitSystem->getConfig('server_mailman_bin')}
 			{formfeedback error="Mailman is not configured."}
 		{/if}
-		{if !$gBitSystem->getConfig('boards_sync_user') || !$gBitSystem->getConfig('boards_sync_user')}
+		{if !$gBitSystem->getConfig('boards_sync_user') or !$gBitSystem->getConfig('boards_sync_user')}
 			{formfeedback error="List to Board Sync is not configured."}
 		{/if}
 		{if $gBitUser->isAdmin()}
-			<a href="{$smarty.const.KERNEL_PKG_URL}admin/index.php?page=boards">{tr}See Boards Administration{/tr}</a>
+			<a href="{$smarty.const.KERNEL_PKG_URL}admin/index.php?page=boards">See Boards Administration</a>
 		{/if}
 	{/if}
 {/if}

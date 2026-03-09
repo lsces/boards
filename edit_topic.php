@@ -11,7 +11,8 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+use \Bitweaver\Boards\BitBoard;
+require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'boards' );
@@ -54,7 +55,7 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 	if( !empty( $_REQUEST['cancel'] ) ) {
 		// user cancelled - just continue on, doing nothing
 	} elseif( empty( $_REQUEST['confirm'] ) ) {
-		$formHash['remove'] = TRUE;
+		$formHash['remove'] = true;
 		$formHash['t'] = $_REQUEST['t'];
 		$gBitSystem->confirmDialog( $formHash, 
 			array( 
@@ -66,7 +67,7 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 		// @TODO Topic should extend LibertyComment - but until that day we load it up a second time
 		$topicAsComment = new LibertyComment( $_REQUEST['t'] );
 		if( !$topicAsComment->expunge() ) {
-			$gBitSmarty->assignByRef( 'errors', $topicAsComment->mErrors );
+			$gBitSmarty->assign( 'errors', $topicAsComment->mErrors );
 		}
 		// send us back to the baord - http_referer won't work with confirm process 
 		bit_redirect( BOARDS_PKG_URL.'index.php?b='. $gContent->mInfo['board_id'] );

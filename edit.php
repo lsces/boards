@@ -11,7 +11,7 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'boards' );
@@ -32,13 +32,13 @@ if( $gContent->isValid() ) {
 // Handle delete request
 if( isset( $_REQUEST['remove'] ) ) {
 	// @TODO: Change to verifyExpungePermission when that exists in LibertyContent
-	if ( $gContent->isValid() && $gContent->hasUserPermission( 'p_boards_remove', TRUE, TRUE ) ) {
+	if ( $gContent->isValid() && $gContent->hasUserPermission( 'p_boards_remove', true, true ) ) {
 		if( empty( $_REQUEST['confirm'] ) ) {
 			$formHash['b'] = $_REQUEST['b'];
-			$formHash['remove'] = TRUE;
+			$formHash['remove'] = true;
 			$gBitSystem->confirmDialog( $formHash, array( 'warning' => tra( 'Are you sure you want to remove the entire message board' ).' "'.$gContent->getTitle().'" ?', 'error' => 'This cannot be undone!' ) );
 		} elseif( !$gContent->expunge() ) {
-			$gBitSmarty->assignByRef( 'errors', $deleteComment->mErrors );
+			$gBitSmarty->assign( 'errors', $deleteComment->mErrors );
 		} else {
 			bit_redirect( BOARDS_PKG_URL.'index.php' );
 		}
@@ -66,10 +66,10 @@ if( !empty( $_REQUEST["save_bitboard"] ) ) {
 	// to avoid error messages. This can happen if some features are
 	// disabled
 	if( $gContent->store( $storeHash ) ) {
-		$gContent->storePreference( 'board_sync_list_address', (!empty( $_REQUEST['bitboardconfig']['board_sync_list_address'] ) ?  $_REQUEST['bitboardconfig']['board_sync_list_address'] : NULL) );
+		$gContent->storePreference( 'board_sync_list_address', (!empty( $_REQUEST['bitboardconfig']['board_sync_list_address'] ) ?  $_REQUEST['bitboardconfig']['board_sync_list_address'] : null) );
 		bit_redirect( $gContent->getDisplayUrl() );
 	} else {
-		$gBitSmarty->assignByRef( 'errors', $gContent->mErrors );
+		$gBitSmarty->assign( 'errors', $gContent->mErrors );
 	}
 }
 

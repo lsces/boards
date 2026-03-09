@@ -10,25 +10,25 @@
 					{section name=ix loop=$boards}
 						<option value="{$boards[ix].boards_id|escape}" {if $boards[ix].boards_id eq $home_bitboard}selected="selected"{/if}>{$boards[ix].title|escape|truncate:20:"...":true}</option>
 					{sectionelse}
-						<option>{tr}No records found{/tr}</option>
+						<option>No records found</option>
 					{/section}
 				</select>
 			{/forminput}
 		</div>
 
 		<div class="form-group submit">
-			<input type="submit" class="btn btn-default" name="homeTabSubmit" value="{tr}Change preferences{/tr}" />
+			<input type="submit" class="btn btn-default" name="homeTabSubmit" value="Change preferences" />
 		</div>
 	{/legend}
 *}
 	{legend legend="List Settings"}
-		<input type="hidden" name="page" value="{$page}" />
+		<input type="hidden" name="page" value="{$page|default:''}" />
 		{foreach from=$formBitBoardsLists key=item item=output}
 			<div class="form-group">
 				{formlabel label=$output.label for=$item}
 				{forminput label="checkbox"}
 					{html_checkboxes name="$item" values="y" checked=$gBitSystem->getConfig($item) labels=false id=$item}
-					{formhelp note=$output.note page=$output.page}
+					{formhelp note=$output.note page=$output.page|default:''}
 				{/forminput}
 			</div>
 		{/foreach}
@@ -38,7 +38,7 @@
 		<div class="form-group">
 			{forminput}
 		<h2>List to Board Sync</h2>
-		<p>{tr}List to Board Sync allows a bitweaver board to mirror messages that are posted to a mailing list. A single, master email inbox entered below is used for *all* email list subscriptions. Then, configure individual boards to indicate which mailing list to which it is subscribed. The Board Sync cron script will import messages from the master email inbox.{/tr}</p>
+		<p>List to Board Sync allows a bitweaver board to mirror messages that are posted to a mailing list. A single, master email inbox entered below is used for *all* email list subscriptions. Then, configure individual boards to indicate which mailing list to which it is subscribed. The Board Sync cron script will import messages from the master email inbox.</p>
 			{/forminput}
 		</div>
 		{foreach from=$formBitBoardsSync key=item item=output}
@@ -46,7 +46,7 @@
 				{formlabel label=$output.label for=$item}
 				{forminput}
 					<input type="text" class="form-control" name="{$item}" value="{$gBitSystem->getConfig($item)}" id={$item}" />
-					{formhelp note=$output.note page=$output.page}
+					{formhelp note=$output.note page=$output.page|default:''}
 				{/forminput}
 			</div>
 		{/foreach}
@@ -54,7 +54,7 @@
 		<div class="form-group">
 			{forminput}
 		<h2>Board to List Sync</h2>
-		<p>{tr}Board to List Sync is the opposite of the above. It allows a bitweaver board to send a message to mailing list. You must complete the "List to Board Sync" configuration above for this feature to work.{/tr} {tr}Please see <a href="http://www.bitweaver.org/wiki/BoardsEmailListConfig">configuration requirements</a> prior to utilizing this feature.{/tr}</p>
+		<p>Board to List Sync is the opposite of the above. It allows a bitweaver board to send a message to mailing list. You must complete the "List to Board Sync" configuration above for this feature to work. Please see <a href="http://www.bitweaver.org/wiki/BoardsEmailListConfig">configuration requirements</a> prior to utilizing this feature.</p>
 			{/forminput}
 		</div>
 
@@ -69,7 +69,7 @@
 				{formlabel label=$output.label for=$item}
 				{forminput label="checkbox"}
 					{html_checkboxes name="$item" values="y" checked=$gBitSystem->getConfig($item) labels=false id=$item}
-					{formhelp note=$output.note page=$output.page}
+					{formhelp note=$output.note page=$output.page|default:''}
 				{/forminput}
 			</div>
 		{/foreach}
@@ -122,7 +122,7 @@
 		</div>
 	{/legend}
 	<div class="form-group submit">
-		<input type="submit" class="btn btn-default" name="listTabSubmit" value="{tr}Change preferences{/tr}" />
+		<input type="submit" class="btn btn-default" name="listTabSubmit" value="Change preferences" />
 	</div>
 {/form}
 {/strip}

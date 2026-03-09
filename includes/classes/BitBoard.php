@@ -14,7 +14,13 @@
 /**
  * required setup
  */
-require_once( LIBERTY_PKG_CLASS_PATH.'LibertyMime.php' );
+namespace Bitweaver\Boards;
+use Bitweaver\BitBase;
+use Bitweaver\KernelTools;
+use Bitweaver\Pigeonholes\Pigeonholes;
+use Bitweaver\Liberty\LibertyContent;
+use Bitweaver\Liberty\LibertyMime;
+use function intval;
 
 /**
 * This is used to uniquely identify the object
@@ -34,7 +40,7 @@ class BitBoard extends LibertyMime {
 	/**
 	* During initialisation, be sure to call our base constructors
 	**/
-	function __construct( $pBitBoardId=NULL, $pContentId=NULL ) {
+	function __construct( $pBitBoardId=null, $pContentId=null ) {
 		parent::__construct();
 		$this->mBitBoardId = (int)$pBitBoardId;
 		$this->mContentId = (int)$pContentId;
@@ -58,16 +64,16 @@ class BitBoard extends LibertyMime {
 
 	/**
 	* Load the data from the database
-	* @param pParamHash be sure to pass by reference in case we need to make modifcations to the hash
+	* @param array pParamHash be sure to pass by reference in case we need to make modifcations to the hash
 	**/
-	function load( $pContentId = NULL, $pPluginParams = NULL ) {
+	public function load( $pContentId = null, $pPluginParams = null ) {
 		if( $this->verifyId( $this->mBitBoardId ) || $this->verifyId( $this->mContentId ) ) {
 			// LibertyContent::load()assumes you have joined already, and will not execute any sql!
 			// This is a significant performance optimization
 			$lookupColumn = $this->verifyId( $this->mBitBoardId ) ? 'board_id' : 'content_id';
-			$bindVars = array();
+			$bindVars = [];
 			$selectSql = $joinSql = $whereSql = '';
-			array_push( $bindVars, (int)($lookupId = @BitBase::verifyId( $this->mBitBoardId ) ? $this->mBitBoardId : $this->mContentId) );
+			array_push( $bindVars, (int)($lookupId = BitBase::verifyId( $this->mBitBoardId ) ? $this->mBitBoardId : $this->mContentId) );
 			$this->getServicesSql( 'content_load_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
 
 			$query = "SELECT s.*, lc.*, " .
@@ -86,20 +92,20 @@ class BitBoard extends LibertyMime {
 				$this->mContentId = $result->fields['content_id'];
 				$this->mBitBoardId = $result->fields['board_id'];
 
-				$this->mInfo['creator'] =( isset( $result->fields['creator_real_name'] )? $result->fields['creator_real_name'] : $result->fields['creator_user'] );
-				$this->mInfo['editor'] =( isset( $result->fields['modifier_real_name'] )? $result->fields['modifier_real_name'] : $result->fields['modifier_user'] );
+				$this->mInfo['creator'] =( $result->fields['creator_real_name'] ?? $result->fields['creator_user'] );
+				$this->mInfo['editor'] =( $result->fields['modifier_real_name'] ?? $result->fields['modifier_user'] );
 				$this->mInfo['display_url'] = $this->getDisplayUrl();
 				$this->parseData();
 
 				LibertyMime::load();
 			}
 		}
-		return( count( $this->mInfo ) );
+		return count( $this->mInfo );
 	}
 
 	public static function lookupByMigrateBoard( $pMigrateBoardId ) {
 		global $gBitDb;
-		$ret = NULL;
+		$ret = null;
 		if( BitBase::verifyId( $pMigrateBoardId ) ) {
 			$ret = $gBitDb->getOne( "SELECT `board_id` FROM `".BIT_DB_PREFIX."boards` bb WHERE `migrate_board_id`=?", array( $pMigrateBoardId ) );
 		}
@@ -108,31 +114,26 @@ class BitBoard extends LibertyMime {
 
 	/**
 	* Any method named Store inherently implies data will be written to the database
-	* @param pParamHash be sure to pass by reference in case we need to make modifcations to the hash
+	* @param array pParamHash be sure to pass by reference in case we need to make modifcations to the hash
 	* This is the ONLY method that should be called in order to store( create or update )an bitboard!
 	* It is very smart and will figure out what to do for you. It should be considered a black box.
 	*
 	* @param array pParams hash of values that will be used to store the page
 	*
-	* @return bool TRUE on success, FALSE if store could not occur. If FALSE, $this->mErrors will have reason why
+	* @return bool true on success, false if store could not occur. If false, $this->mErrors will have reason why
 	*
 	* @access public
 	**/
-	function store( &$pParamHash ) {
+	public function store( array &$pParamHash ): bool {
 		if( $this->verify( $pParamHash )&& LibertyMime::store( $pParamHash ) ) {
 			$table = BIT_DB_PREFIX."boards";
 			$this->StartTrans();
 			if( $this->mBitBoardId ) {
-				$locId = array( "board_id" => $pParamHash['board_id'] );
+				$locId = [ "board_id" => $pParamHash['board_id'] ];
 				$result = $this->mDb->associateUpdate( $table, $pParamHash['board_store'], $locId );
 			} else {
 				$pParamHash['board_store']['content_id'] = $pParamHash['content_id'];
-				if( @$this->verifyId( $pParamHash['board_id'] ) ) {
-					// if pParamHash['board_id'] is set, some is requesting a particular board_id. Use with caution!
-					$pParamHash['board_store']['board_id'] = $pParamHash['board_id'];
-				} else {
-					$pParamHash['board_store']['board_id'] = $this->mDb->GenID( 'boards_board_id_seq' );
-				}
+				$pParamHash['board_store']['board_id'] = ( @$this->verifyId( $pParamHash['board_id'] ) ) ? $pParamHash['board_id'] : $this->mDb->GenID( 'boards_board_id_seq' );
 				$this->mBitBoardId = $pParamHash['board_store']['board_id'];
 
 				$result = $this->mDb->associateInsert( $table, $pParamHash['board_store'] );
@@ -142,7 +143,7 @@ class BitBoard extends LibertyMime {
 					require_once( UTIL_PKG_INCLUDE_PATH.'mailman_lib.php' );
 					if( $gBitSystem->getConfig( 'boards_sync_mail_server' ) ) {
 						if( !($error = mailman_newlist( array( 'listname' => $pParamHash['boards_mailing_list'], 'listhost' => $gBitSystem->getConfig( 'boards_email_host', $gBitSystem->getConfig( 'kernel_server_name' ) ), 'admin-password'=>$pParamHash['boards_mailing_list_password'], 'listadmin-addr'=>$gBitUser->getField( 'email' ) ) )) ) {
-							$this->storePreference( 'boards_mailing_list', !empty( $pParamHash['boards_mailing_list'] ) ? $pParamHash['boards_mailing_list'] : NULL );
+							$this->storePreference( 'boards_mailing_list', !empty( $pParamHash['boards_mailing_list'] ) ? $pParamHash['boards_mailing_list'] : null );
 							$this->storePreference( 'boards_mailing_list_password', $pParamHash['boards_mailing_list_password'] );
 							// Subscribe the owner
 							mailman_addmember( $this->getPreference( 'boards_mailing_list'), $gBitUser->getField('email') );
@@ -164,8 +165,8 @@ class BitBoard extends LibertyMime {
 				$this->load();
 			} else {
 				$this->mDb->RollbackTrans();
-				$this->mContentId = NULL;
-				$this->mBitBoardId = NULL;
+				$this->mContentId = null;
+				$this->mBitBoardId = null;
 			}
 		}
 		return( count( $this->mErrors )== 0 );
@@ -173,17 +174,16 @@ class BitBoard extends LibertyMime {
 
 	/**
 	* Make sure the data is safe to store
-	* @param pParamHash be sure to pass by reference in case we need to make modifcations to the hash
+	* @param array pParamHash be sure to pass by reference in case we need to make modifcations to the hash
 	* This function is responsible for data integrity and validation before any operations are performed with the $pParamHash
 	* NOTE: This is a PRIVATE METHOD!!!! do not call outside this class, under penalty of death!
 	*
 	* @param array pParams reference to hash of values that will be used to store the page, they will be modified where necessary
-	*
-	* @return bool TRUE on success, FALSE if verify failed. If FALSE, $this->mErrors will have reason why
+	* @return bool true on success, false if verify failed. If false, $this->mErrors will have reason why
 	*
 	* @access private
 	**/
-	function verify( &$pParamHash ) {
+	public function verify( array &$pParamHash ): bool {
 		// make sure we're all loaded up of we have a mBitBoardId
 		if( $this->verifyId( $this->mBitBoardId ) && empty( $this->mInfo ) ) {
 			$this->load();
@@ -272,8 +272,7 @@ class BitBoard extends LibertyMime {
 	/**
 	* This function removes a bitboard entry
 	**/
-	function expunge() {
-		$ret = FALSE;
+	public function expunge(): bool {
 		if( $this->isValid() ) {
 			$this->StartTrans();
 			$mailingList = $this->getPreference( 'boards_mailing_list' );
@@ -283,18 +282,17 @@ class BitBoard extends LibertyMime {
 			$result = $this->mDb->query( $query, array( $this->mContentId ) );
 			if( LibertyMime::expunge() ) {
 				if( $mailingList ) {
-					require_once( UTIL_PKG_INCLUDE_PATH.'mailman_lib.php' );
+					require_once UTIL_PKG_INCLUDE_PATH.'mailman_lib.php';
 					if( $error = mailman_rmlist( $mailingList ) ) {
 						$this->mErrors['mailing_list'] = $error;
 					}
 				}
-				$ret = TRUE;
 				$this->CompleteTrans();
 			} else {
 				$this->mDb->RollbackTrans();
 			}
 		}
-		return $ret;
+		return true;
 	}
 
 	/**
@@ -306,9 +304,9 @@ class BitBoard extends LibertyMime {
 
 	function getAllMap() {
 		$b = new BitBoard();
-		$listHash = array();
+		$listHash = [];
 		$l = $b->getList($listHash);
-		$ret = array();
+		$ret = [];
 		foreach ($l as $k => $boardd) {
 			$board = new BitBoard($boardd['board_id']);
 			$board->mInfo=$boardd;
@@ -327,7 +325,7 @@ class BitBoard extends LibertyMime {
 
 	function getUnMapped() {
 		global $gBitSystem;
-		$ret = NULL;
+		$ret = null;
 		$sql = "SELECT
 			lc.`title`,
 			lc.`content_id`,
@@ -359,7 +357,7 @@ class BitBoard extends LibertyMime {
 	}
 
 	function addContent($content_id) {
-		if (@BitBase::verifyId($content_id)) {
+		if (BitBase::verifyId($content_id)) {
 			$data = array(
 			'board_content_id'=>$this->mContentId,
 			'topic_content_id'=>$content_id,
@@ -369,7 +367,7 @@ class BitBoard extends LibertyMime {
 	}
 
 	function removeContent($content_id) {
-		if (@BitBase::verifyId($content_id) && @BitBase::verifyId($this->mContentId)) {
+		if (BitBase::verifyId($content_id) && BitBase::verifyId($this->mContentId)) {
 			$sql = "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `board_content_id` = ? AND `topic_content_id` = ?";
 			$result = $this->mDb->query( $sql, array( $this->mContentId,$content_id ) );
 		}
@@ -392,7 +390,7 @@ class BitBoard extends LibertyMime {
 	}
 
 	function fixContentMap() {
-		if( $this->isValid() && @BitBase::verifyId($this->mContentId)) {
+		if( $this->isValid() && BitBase::verifyId($this->mContentId)) {
 			$this->removeContent($this->mContentId);
 			$this->addContent($this->mContentId);
 		}
@@ -400,8 +398,8 @@ class BitBoard extends LibertyMime {
 
 	function lookupMapRev($content_id) {
 		global $gBitDb;
-		$ret = NULL;
-		if (@BitBase::verifyId($content_id)) {
+		$ret = null;
+		if (BitBase::verifyId($content_id)) {
 			$sql = "SELECT `board_content_id` FROM `".BIT_DB_PREFIX."boards_map` map WHERE map.`topic_content_id`=?";
 			$ret = $gBitDb->getOne( $sql, array( $content_id ));
 		}
@@ -410,7 +408,7 @@ class BitBoard extends LibertyMime {
 
 	function getMap() {
 		global $gBitSystem;
-		$ret = NULL;
+		$ret = null;
 		if( $this->isValid() ) {
 			$sql = "SELECT
 			lc.`title` AS t_title,
@@ -440,7 +438,7 @@ class BitBoard extends LibertyMime {
 		return $ret;
 	}
 
-	public static function prepGetList( &$pParamHash ) {
+	public static function prepGetList( array &$pParamHash ): void {
 		if( empty( $pParamHash['sort_mode'] ) ) {
 			// default sort_mode for boards is alphabetical
 			$pParamHash['sort_mode'] = 'title_asc';
@@ -457,7 +455,7 @@ class BitBoard extends LibertyMime {
 		$this->prepGetList( $pParamHash );
 
 		$selectSql = $joinSql = $whereSql = '';
-		$bindVars = array();
+		$bindVars = [];
 		array_push( $bindVars, $this->mContentTypeGuid );
 		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
 
@@ -510,7 +508,7 @@ class BitBoard extends LibertyMime {
 			INNER JOIN `".BIT_DB_PREFIX."liberty_comments` s_lcom ON (map.`topic_content_id` = s_lcom.`root_id`)
 			INNER JOIN `".BIT_DB_PREFIX."liberty_content` s_lc ON (s_lcom.`content_id` = s_lc.`content_id`)
 			LEFT JOIN  `".BIT_DB_PREFIX."boards_posts` s ON( s_lcom.`comment_id` = s.`comment_id` )
-WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`is_approved` = 0 OR s.`is_approved` IS NULL) )
+WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`is_approved` = 0 OR s.`is_approved` IS null) )
 			) AS unreg";
 		} else {
 			$selectSql .= ", 0 AS unreg";
@@ -542,7 +540,7 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 
 		$result = $this->mDb->query( $query, $bindVars );
 
-		$ret = array();
+		$ret = [];
 		while( $res = $result->fetchRow() ) {
 			$res['url']= BOARDS_PKG_URL."index.php?b={$res['board_id']}";
 
@@ -551,23 +549,19 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 					INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON (map.`topic_content_id` = lcom.`root_id`)
 					INNER JOIN `".BIT_DB_PREFIX."liberty_content` slc ON( slc.`content_id` = lcom.`content_id` )
 					LEFT JOIN `".BIT_DB_PREFIX."boards_posts` fp ON (fp.`comment_id` = lcom.`comment_id`)
-				WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS NULL))", array( $res['content_id'] ) );
+				WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS null))", array( $res['content_id'] ) );
 
 			$res['post_count'] = $this->mDb->getOne( "SELECT count(*)
 				FROM `".BIT_DB_PREFIX."liberty_comments` lcom
 					INNER JOIN `".BIT_DB_PREFIX."liberty_content` slc ON( slc.`content_id` = lcom.`content_id` )
 					INNER JOIN `".BIT_DB_PREFIX."boards_map` map ON (lcom.`root_id`=map.`topic_content_id`)
 					LEFT JOIN `".BIT_DB_PREFIX."boards_posts` fp ON (fp.`comment_id` = lcom.`comment_id`)
-				WHERE map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS NULL))", array( $res['content_id'] ) );
+				WHERE map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS null))", array( $res['content_id'] ) );
 			if($track) {
 				if ($gBitUser->isRegistered()) {
 					$res['track']['on'] = true;
 					$res['track']['count'] = $res['track_count'];
-					if ($res['post_count']>$res['track_count']) {
-						$res['track']['mod'] = true;
-					} else {
-						$res['track']['mod'] = false;
-					}
+					$res['track']['mod'] = ( $res['post_count'] > $res['track_count'] ) ? true : false;
 				}  else {
 					$res['track']['on'] = false;
 				}
@@ -592,7 +586,7 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 				INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON (map.`topic_content_id` = lcom.`root_id`)
 				INNER JOIN `".BIT_DB_PREFIX."liberty_content` slc ON( slc.`content_id` = lcom.`content_id` )
 				LEFT JOIN `".BIT_DB_PREFIX."boards_posts` fp ON (fp.`comment_id` = lcom.`comment_id`)
-			WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` IS NULL OR fp.`is_approved` = 1) OR (slc.`user_id` >= 0))
+			WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` IS null OR fp.`is_approved` = 1) OR (slc.`user_id` >= 0))
 		    ORDER BY slc.`last_modified` DESC
 	    ";
 		$result = $this->mDb->getRow( $query, array( $data['content_id'] ) );
@@ -608,19 +602,18 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 
 	/**
 	* Generates the URL to the bitboard page
-	* @return the link to display the page.
+	* @return string link to display the page.
 	*/
 	public static function getDisplayUrlFromHash( &$pParamHash ) {
 		global $gBitSystem;
-		$ret = NULL;
+		$ret = null;
 
 		if( !empty( $pParamHash['comment'] ) && !empty( $pParamHash['comment']['thread_forward_sequence'] ) ){
-			// look up base of comment sequece which is BitBoardTopic
+			// look up base of comment sequence which is BitBoardTopic
 			$seq = explode( ".",  $pParamHash['comment']['thread_forward_sequence'] );
 			$topicRootId = 	(int)$seq[0];
 			if( BitBase::verifyId( $topicRootId )) {
-				require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
-				$hash = array( 'topic_id' => $topicRootId );
+				$hash = [ 'topic_id' => $topicRootId ];
 				$ret = BitBoardTopic::getDisplayUrlFromHash( $hash );
 				// we're out of here with our topic url
 				return $ret;
@@ -641,12 +634,12 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 		return $ret;
 	}
 
-	function getBoardSelectList( $pBlankFirst=FALSE ) {
+	public function getBoardSelectList( $pBlankFirst=false ) {
 		global $gBitSystem, $gBitUser;
 
 		// invoke list sql principly to enforce permission services
 		$selectSql = $joinSql = $whereSql = '';
-		$bindVars = array();
+		$bindVars = [];
 
 		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
 
@@ -670,7 +663,7 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 			WHERE lc.`content_id` = b.`content_id` $whereSql
 			ORDER BY lc.`title` ASC";
 
-		$ret = array();
+		$ret = [];
 
 		if( $rslt = $this->mDb->query( $query, $bindVars ) ){
 			if( $pBlankFirst ) {
@@ -691,7 +684,7 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 		if( LibertyContent::verifyId( $contentId ) ) {
 			// LibertyContent::load()assumes you have joined already, and will not execute any sql!
 			// This is a significant performance optimization
-			$bindVars = array();
+			$bindVars = [];
 			$selectSql = $joinSql = $whereSql = '';
 			array_push( $bindVars, $contentId );
 			$gBitUser->getServicesSql( 'content_load_sql_function', $selectSql, $joinSql, $whereSql, $bindVars );
@@ -703,7 +696,7 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 			WHERE lc.`content_id`=? $whereSql";
 			$result = $gBitDb->query( $query, $bindVars );
 
-			$ret = array();
+			$ret = [];
 			if( $result && $result->numRows() ) {
 				$ret = $result->fields;
 
@@ -712,12 +705,12 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 				$ret['display_url'] = BIT_ROOT_URL."index.php?content_id=$contentId";
 			}
 		}
-		return( $ret );
+		return $ret;
 	}
 
 	public static function getLinkedBoard( $pContentId ) {
 		global $gBitDb;
-		$ret = NULL;
+		$ret = null;
 		if( BitBase::verifyId( $pContentId ) ) {
 			$sql = "SELECT b.`board_id`, b.`content_id` AS `board_content_id`, COUNT(lcom.`comment_id`) AS `post_count`
 					FROM `".BIT_DB_PREFIX."boards_map` bm
@@ -743,7 +736,7 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 
 	function getBoardMailingList() {
 		global $gBitSystem;
-		$ret = NULL;
+		$ret = null;
 		if( $this->isValid() && $gBitSystem->getConfig( 'boards_sync_mail_server' ) && $this->getPreference( 'boards_mailing_list' ) ) {
 			$ret = $this->getPreference( 'boards_mailing_list' ).'@'.$gBitSystem->getConfig( 'boards_email_host', $gBitSystem->getConfig( 'kernel_server_name' ) );
 		}
@@ -770,16 +763,15 @@ function boards_content_edit ( $pContent, $pParamHash ) {
 		}
 		require_once( BOARDS_PKG_CLASS_PATH.'BitBoard.php' );
 		$board = new BitBoard();
-		$boardList = $board->getBoardSelectList( TRUE );
+		$boardList = $board->getBoardSelectList( true );
 		$gBitSmarty->assign( 'boardList', $boardList );
 	}
 }
 
-// store services for boads
+// store services for boards
 function boards_content_store( $pContent, $pParamHash ) {
 	global $gBitDb, $gBitSmarty, $gBitSystem;
 
-	require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
 	// do not allow unassigning topics. the UI should prevent this, but just to make sure...
 	if( $pContent->isValid() && !$pContent->isContentType( BITBOARDTOPIC_CONTENT_TYPE_GUID ) && !$pContent->isContentType( BITBOARD_CONTENT_TYPE_GUID ) ) {
 		// wipe out all previous assignments for good measure. Not the sanest thing to do, but edits are infrequent - at least for now
@@ -791,7 +783,6 @@ function boards_content_store( $pContent, $pParamHash ) {
 			$p = null;
 			if ( ! empty( $pParamHash['pigoneholes'] ) ) {
 				foreach( $pParamHash['pigeonholes']['pigeonhole'] as $p_id ) {
-					require_once(PIGEONHOLES_PKG_CLASS_PATH.'Pigeonholes.php');
 					if (empty($p)) {
 						$p = new Pigeonholes();
 					}
@@ -804,7 +795,7 @@ function boards_content_store( $pContent, $pParamHash ) {
 
 					// Insert into these boards
 					foreach ($boards as $board) {
-						if( @BitBase::verifyId( $board['content_id'] ) ) {
+						if( BitBase::verifyId( $board['content_id'] ) ) {
 							$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", array( $board['content_id'], $pContent->mContentId ) );
 						}
 					}
@@ -813,13 +804,13 @@ function boards_content_store( $pContent, $pParamHash ) {
 		}
 		else {
 			$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", array( $pContent->mContentId ) );
-			if( @BitBase::verifyId( $pParamHash['linked_board_cid'] ) ) {
+			if( BitBase::verifyId( $pParamHash['linked_board_cid'] ?? 0 ) ) {
 				$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", array( $pParamHash['linked_board_cid'], $pContent->mContentId ) );
 			}
 		}
 		$gBitSmarty->assign( 'boardInfo', BitBoard::getLinkedBoard( $pContent->mContentId ) );
 	} else {
-		if( @BitBase::verifyId( $pParamHash['content_id'] ) && @BitBase::verifyId( $pParamHash['linked_board_cid'] ) ) {
+		if( BitBase::verifyId( $pParamHash['content_id'] ?? 0 ) && BitBase::verifyId( $pParamHash['linked_board_cid'] ?? 0 ) ) {
 			$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", array( $pParamHash['linked_board_cid'], $pParamHash['content_id'] ) );
 		}
 	}
@@ -845,13 +836,13 @@ function boards_comment_store( &$pObject, &$pParamHash ) {
 	}
 }
 
-function boards_content_verify( $pObject, &$pParamHash ){
+function boards_content_verify( &$pObject, &$pParamHash ){
 	// board posts ( e.g. liberty comments ) service
 	global $gBitSystem, $gBitUser;
 	// use is_a instead of isContentType( BITCOMMENT_CONTENT_TYPE_GUID ) as isContentType() checks isValid(), and this service method will not properly handle new object stores
 	if( $gBitSystem->isPackageActive( 'boards' ) && is_a( $pObject , 'LibertyComment' ) ) {
 		if( BitBoardTopic::isLockedMsg( $pParamHash['parent_id'] )) {
-			$pObject->mErrors['warning']=tra("The selected Topic is Locked posting is disabled");
+			$pObject->mErrors['warning'] = KernelTools::tra("The selected Topic is Locked posting is disabled");
 		}
 	}
 }
@@ -862,5 +853,3 @@ function boards_content_expunge( $pContent ) {
 		$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", array( $pContent->mContentId ) );
 	}
 }
-
-?>

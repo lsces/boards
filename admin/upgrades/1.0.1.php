@@ -8,7 +8,7 @@ $infoHash = array(
 	'package'      => BOARDS_PKG_NAME,
 	'version'      => str_replace( '.php', '', basename( __FILE__ )),
 	'description'  => "Add boards sections and positioning.",
-	'post_upgrade' => NULL,
+	'post_upgrade' => null,
 );
 $gBitInstaller->registerPackageUpgrade( $infoHash, array(
 
@@ -26,7 +26,7 @@ array( 'DATADICT' => array(
 			'pos' => array( '`pos`', 'I4' ),
 	))),
 	array( 'CREATEINDEX' => array(
-		'boards_sections_idx'       => array( 'boards', 'section_id', array() ),
+		'boards_sections_idx'       => array( 'boards', 'section_id', [] ),
 	)),
 	array( 'CREATESEQUENCE' => array(
 		'boards_sections_id_seq',

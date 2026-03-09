@@ -20,6 +20,3 @@ require_once( BOARDS_PKG_ADMIN_PATH.'phpbb_migrate.php' );
 
 migrate_phpbb();
  */
-
-
-?>

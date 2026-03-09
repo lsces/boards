@@ -2,7 +2,7 @@
 {strip}
 <div class="listing boards">
 	<div class="header">
-		<h1>{tr}{if $smarty.const.BOARDS_PKG_DIR != 'boards'}{$smarty.const.BOARDS_PKG_DIR|ucfirst}{else}Message Boards{/if}{/tr}</h1>
+		<h1>{if $smarty.const.BOARDS_PKG_DIR != 'boards'}{$smarty.const.BOARDS_PKG_DIR|ucfirst}{else}Message Boards{/if}</h1>
 	</div>
 
 	<div class="body">
@@ -12,7 +12,7 @@
 				{include file="bitpackage:boards/board_cat.tpl" child=$child color=$color}
 			{/if}
 		{foreachelse}
-			{tr}No message boards found{/tr}
+			No message boards found
 		{/foreach}
 
 		{include file="bitpackage:boards/legend_inc.tpl" boardicons=1}

@@ -1,7 +1,7 @@
 {strip}
 <div class="display rss">
 	<div class="header">
-		<h1>{tr}RSS Syndication{/tr}</h1>
+		<h1>RSS Syndication</h1>
 	</div>
 
 	<div class="body">
@@ -34,7 +34,7 @@
 				<div class="form-group">
 					{formlabel label="Feed" for="pkg"}
 					{forminput}
-						{if $gContent->isValid()}{tr}{$gContent->getField('title')} Feed{/tr}{else}{tr}Recent Discussions{/tr}{/if}
+						{if $gContent->isValid()}{$gContent->getField('title')} Feed{else}Recent Discussions{/if}
 						{formhelp note=""}
 					{/forminput}
 				</div>

@@ -18,7 +18,7 @@ require_once( '../../kernel/includes/setup_inc.php' );
 
 $gBitSystem->verifyPermission( 'p_admin' );
 
-$_SESSION['captcha_verified'] = TRUE;
+$_SESSION['captcha_verified'] = true;
 
 global $db;
 
@@ -65,7 +65,7 @@ vd( $forumList ); flush();
 		foreach( array_keys( $forumList ) as $forumId ) {
 print "Migrating forum $forumId<br/>\n"; flush();
 			if( empty( $forumList[$forumId]['content_id'] ) ) {
-				$forumStore = array();
+				$forumStore = [];
 				$forumStore['user_id'] = ROOT_USER_ID;
 				$forumStore['title'] = $forumList[$forumId]['forum_name'];
 				$forumStore['edit'] = $forumList[$forumId]['forum_desc'];
@@ -105,7 +105,7 @@ function migrate_phpbb_forum( $pForumId, $pForumContentId  ) {
 	}
 $gBitDb->StartTrans();
 	while ( $row = $db->sql_fetchrow($result) ) {
-		$commentHash = array();
+		$commentHash = [];
 		$commentHash['root_id'] = $pForumContentId;
 		$commentHash['parent_id'] = $pForumContentId;
 		$commentHash['anon_name'] = $row['post_username'];
@@ -123,8 +123,8 @@ $gBitDb->StartTrans();
 print "Migrating Post $row[post_id]<br/>\n"; flush();
 			$topicHash['root_id'] = $rootComment->mContentId;
 			$topicHash['is_moved'] = $row['topic_moved_id'];
-			$topicHash['is_sticky'] = !empty( $row['topic_type'] ) ? '1' : NULL;
-			$topicHash['is_moved'] = ($row['topic_status'] == 2 ? '1' : NULL);
+			$topicHash['is_sticky'] = !empty( $row['topic_type'] ) ? '1' : null;
+			$topicHash['is_moved'] = ($row['topic_status'] == 2 ? '1' : null);
 			$topicHash['migrate_topic_id'] = $row['topic_id'];
 			$rootTopic = new BitBoardTopic( $rootComment->mContentId );
 			$rootTopic->store( $topicHash );
@@ -152,7 +152,7 @@ function migrate_phpbb_topic( $pTopicId, &$pRootComment ) {
 	}
 	while ( $row = $db->sql_fetchrow($result) ) {
 print "Migrating Post $row[post_id]<br/>\n";
-		$commentHash = array();
+		$commentHash = [];
 		$commentHash['root_id'] = $pRootComment->getField( 'root_id' );
 		$commentHash['parent_id'] = $pRootComment->getField( 'content_id' );
 		$commentHash['anon_name'] = $row['post_username'];

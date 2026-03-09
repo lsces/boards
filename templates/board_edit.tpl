@@ -25,9 +25,9 @@
 	<div class="header">
 		<h1>
 			{if $gContent->isValid()}
-				{tr}{tr}Edit{/tr} {$gContent->getTitle()|escape}{/tr}
+				Edit {$gContent->getTitle()|escape}
 			{else}
-				{tr}Create New Board{/tr}
+				Create New Board
 			{/if}
 		</h1>
 	</div>
@@ -55,7 +55,7 @@
 		{/jstabs}
 
 		<div class="form-group submit">
-			<input type="submit" class="btn btn-primary" name="save_bitboard" value="{tr}Save{/tr}" /> <input type="submit" class="btn btn-default" name="preview" value="{tr}Preview{/tr}" />
+			<input type="submit" class="btn btn-primary" name="save_bitboard" value="Save" /> <input type="submit" class="btn btn-default" name="preview" value="Preview" />
 		</div>
 		{/form}
 	</div><!-- end .body -->

@@ -11,14 +11,16 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+namespace Bitweaver\Boards;
+require_once '../kernel/includes/setup_inc.php';
+use Bitweaver\BitBase;
+use Bitweaver\HttpStatusCodes;
 
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'boards' );
 
 // if we're getting a migrate id then lets move on right away
-if ( @BitBase::verifyId( $_REQUEST['migrate_board_id'] ) ) {
-	require_once( BOARDS_PKG_CLASS_PATH.'BitBoard.php' );
+if ( BitBase::verifyId( $_REQUEST['migrate_board_id'] ?? 0 ) ) {
 
 	if( $_REQUEST['b'] = BitBoard::lookupByMigrateBoard( $_REQUEST['migrate_board_id'] ) ) {
 		bit_redirect( BOARDS_PKG_URL.'index.php?b='. $_REQUEST['b'] );
@@ -28,10 +30,10 @@ if ( @BitBase::verifyId( $_REQUEST['migrate_board_id'] ) ) {
 $_REQUEST['board_id'] = BitBase::getParameter( $_REQUEST, 'b' );
 
 // Load up the board
-require_once( BOARDS_PKG_INCLUDE_PATH.'lookup_inc.php' );
+require_once BOARDS_PKG_INCLUDE_PATH.'lookup_inc.php';
 
 if( !$gContent->isValid() ) {
-	$gBitSystem->fatalError( "The board you requested could not be found. <a href='".BOARDS_PKG_URL."'>View all boards</a>", NULL, NULL, HttpStatusCodes::HTTP_GONE );
+	$gBitSystem->fatalError( "The board you requested could not be found. <a href='".BOARDS_PKG_URL."'>View all boards</a>", null, null, HttpStatusCodes::HTTP_GONE );
 }
 
 // approve or reject ananymous comments
@@ -43,7 +45,7 @@ if (!empty($_REQUEST['action'])) {
 	$gBitUser->verifyTicket();
 
 	// Load up the comment as a board post
-	require_once( BOARDS_PKG_CLASS_PATH.'BitBoardPost.php' );
+	require_once BOARDS_PKG_CLASS_PATH.'BitBoardPost.php';
 	$comment = new BitBoardPost($_REQUEST['comment_id']);
 	$comment->loadComment();
 
@@ -75,7 +77,7 @@ if (!empty($_REQUEST['action'])) {
  *
  * @TODO perhaps move this into the action process above
  */
-require_once( BOARDS_PKG_INCLUDE_PATH.'edit_topic_inc.php' );
+require_once BOARDS_PKG_INCLUDE_PATH.'edit_topic_inc.php';
 
 
 // Ok finally we can get on with viewing our board
@@ -89,10 +91,10 @@ $commentsParentId=$gContent->mContentId;
 $comments_return_url=  BOARDS_PKG_URL."index.php?b=".urlencode($gContent->mBitBoardId);
 
 // @TODO not clear why we load up comments and topics after this when its likely to get both. If someone figures it out please clarify.
-require_once( BOARDS_PKG_INCLUDE_PATH.'boards_comments_inc.php' );
+require_once BOARDS_PKG_INCLUDE_PATH.'boards_comments_inc.php';
 
 // get the topics for this board
-require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
+require_once BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php';
 
 $threads = new BitBoardTopic( $gContent->mContentId );
 
@@ -101,16 +103,15 @@ $threads->mRootObj = $gContent;
 $threadsListHash = $_REQUEST;
 $threadList = $threads->getList( $threadsListHash );
 
-$gBitSmarty->assignByRef( 'threadList', $threadList );
+$gBitSmarty->assign( 'threadList', $threadList );
 
 // getList() has now placed all the pagination information in $_REQUEST['listInfo']
-$gBitSmarty->assignByRef( 'listInfo', $threadsListHash['listInfo'] );
+$gBitSmarty->assign( 'listInfo', $threadsListHash['listInfo'] );
 
-$gBitSmarty->assignByRef( 'board', $gContent );
+$gBitSmarty->assign( 'board', $gContent );
 $gBitSmarty->assign( 'cat_url', BOARDS_PKG_URL."index.php"); //?ct=".urlencode($gContent->mInfo['content_type_guid']));
 
 $gBitThemes->loadAjax( 'mochikit' );
 
 // Display the template
 $gBitSystem->display( 'bitpackage:boards/list_topics.tpl', tra( 'Message Board Threads: ' . $gContent->getField('title') ) , array( 'display_mode' => 'display' ));
-?>

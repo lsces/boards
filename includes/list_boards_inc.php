@@ -23,8 +23,8 @@ $gBitSystem->verifyPackage( 'boards' );
 $gBitSystem->verifyPermission( 'p_boards_read' );
 
 // Get a list of boards
-$ns = array();
-$board_all_cids =array();
+$ns = [];
+$board_all_cids =[];
 
 // @TODO move pigeonholes to its own file library or something
 if($gBitSystem->isPackageActive('pigeonholes')) {
@@ -33,11 +33,11 @@ if($gBitSystem->isPackageActive('pigeonholes')) {
 	$p = new Pigeonholes();
 	$s = new LibertyStructure();
 
-	$listHash = array('load_only_root'=> TRUE);
+	$listHash = array('load_only_root'=> true);
 	$l = $p->getList($listHash);
 	foreach ($l as $e) {
 		$d = $s->getSubTree( $e['structure_id'] );
-		$d_o = array();
+		$d_o = [];
 		foreach ($d as $c) {
 			$pos_var = &$d_o;
 			if($c['level']!=0) {
@@ -45,22 +45,22 @@ if($gBitSystem->isPackageActive('pigeonholes')) {
 				$pos_var = &$d_o;
 				foreach ($pos as $pos_v) {
 					if (!isset($pos_var['children'])) {
-						$pos_var['children']=array();
+						$pos_var['children']=[];
 					}
 					if (!isset($pos_var['children'][$pos_v-1])) {
-						$pos_var['children'][$pos_v-1]=array();
+						$pos_var['children'][$pos_v-1]=[];
 					}
 					$pos_var = &$pos_var['children'][$pos_v-1];
 				}
 			}
 			if (empty($pos_var['data'])) {
-				$pos_var['children']=array();
+				$pos_var['children']=[];
 				$pos_var['data']=$c;
-				$mlHash=array();
+				$mlHash=[];
 				$mlHash['content_id']=$c['content_id'];
 				$mlHash['content_type_guid']=BITBOARD_CONTENT_TYPE_GUID;
 				$pos_var['members']=$p->getMemberList($mlHash);
-				$board_cids =array();
+				$board_cids =[];
 				foreach ($pos_var['members'] as $boardKey) {
 					$board_cids[] = $boardKey['content_id'];
 				}
@@ -79,13 +79,13 @@ if($gBitSystem->isPackageActive('pigeonholes')) {
 }
 
 // get our boards list
-$ret =array();
+$ret =[];
 if($gBitSystem->isPackageActive('pigeonholes')) {
 //	$ret['data']['title']="Uncategorised Boards";
 } else {
 //	$ret['data']['title']="Board List";
 }
-$ret['children']=array();
+$ret['children']=[];
 $listHash = array('nboards'=>$board_all_cids,'paginationOff'=>'y');
 $board = new BitBoard();
 $ret['members'] = $board->getList($listHash);
@@ -97,7 +97,7 @@ if (count($ret['members']) == 1) {
 	$ns[] = $ret;
 }
 
-$gBitSmarty->assignByRef('ns',$ns);
+$gBitSmarty->assign('ns',$ns);
 
 // this might be for getting a count of nested boards - not entirely sure, if you figure it out please clarify this comment.
 function countBoards(&$a) {

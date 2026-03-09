@@ -11,7 +11,7 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'boards' );
@@ -37,7 +37,7 @@ if (!empty($_REQUEST['remove'])) {
 	}
 }
 
-if( !empty( $_REQUEST['assign'] ) && @BitBase::verifyId( $_REQUEST['to_board_id'] ) ) {
+if( !empty( $_REQUEST['assign'] ) && BitBase::verifyId( $_REQUEST['to_board_id'] ?? 0 ) ) {
 	$b = new BitBoard( $_REQUEST['to_board_id'] );
 	$b->load();
 	if ( $b->verifyUpdatePermission() ){
@@ -57,7 +57,7 @@ if (!empty($_REQUEST['integrity'])) {
 }
 
 $data = BitBoard::getAllMap();
-$gBitSmarty->assignByRef('data',$data);
+$gBitSmarty->assign('data',$data);
 
 // Display the template
 $gBitSystem->display( 'bitpackage:boards/board_assign.tpl', tra('Assign content to Board') , array( 'display_mode' => 'display' ));

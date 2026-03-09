@@ -12,7 +12,7 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardPost.php' );
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoard.php' );
@@ -37,7 +37,7 @@ if( $boardSyncInbox = BitBoard::getBoardSyncInbox() ) {
 if( !empty( $_REQUEST['create_list'] ) ) {
 	//------ Email List ------//
 	if( !($error = mailman_newlist( array( 'listname' => $_REQUEST['boards_mailing_list'], 'admin-password'=>$_REQUEST['boards_mailing_list_password'], 'listadmin-addr'=>$gBitUser->getField( 'email' ) ) )) ) {
-		$gContent->storePreference( 'boards_mailing_list', !empty( $_REQUEST['boards_mailing_list'] ) ? $_REQUEST['boards_mailing_list'] : NULL );
+		$gContent->storePreference( 'boards_mailing_list', !empty( $_REQUEST['boards_mailing_list'] ) ? $_REQUEST['boards_mailing_list'] : null );
 		$gContent->storePreference( 'boards_mailing_list_password', $_REQUEST['boards_mailing_list_password'] );
 	} else {
 		$gBitSmarty->assign( 'errorMsg', $error );
@@ -51,7 +51,7 @@ if( !empty( $_REQUEST['create_list'] ) ) {
 } elseif( !empty( $_REQUEST['delete_list'] ) ) {
 	if( $gContent->getPreference( 'boards_mailing_list' ) ) {
 		if( empty( $_REQUEST['confirm'] ) ) {
-			$formHash['delete_list'] = TRUE;
+			$formHash['delete_list'] = true;
 			$formHash['b'] = $gContent->getField( 'board_id' );
 			$gBitSystem->confirmDialog(	$formHash,
 				array(
@@ -61,8 +61,8 @@ if( !empty( $_REQUEST['create_list'] ) ) {
 			);
 		} else {
 			if( !($error = mailman_rmlist( $gContent->getPreference( 'boards_mailing_list' ) )) ) {
-				$gContent->storePreference( 'boards_mailing_list', NULL );
-				$gContent->storePreference( 'boards_mailing_list_password', NULL );
+				$gContent->storePreference( 'boards_mailing_list', null );
+				$gContent->storePreference( 'boards_mailing_list_password', null );
 				bit_redirect( BOARDS_PKG_URL."mailing_list.php?b=".$gContent->getField( 'board_id' ) );
 			} else {
 				$gBitSmarty->assign( 'errorMsg', $error );
@@ -70,7 +70,7 @@ if( !empty( $_REQUEST['create_list'] ) ) {
 		}
 	}
 } elseif( !empty( $_REQUEST['save_list_address'] ) ) {
-	$gContent->storePreference( 'board_sync_list_address', (!empty( $_REQUEST['board_sync_list_address'] ) ? $_REQUEST['board_sync_list_address'] : NULL ) );
+	$gContent->storePreference( 'board_sync_list_address', (!empty( $_REQUEST['board_sync_list_address'] ) ? $_REQUEST['board_sync_list_address'] : null ) );
 } elseif( $gContent->getPreference( 'boards_mailing_list' ) ) {
 	// check for submits that need boards_mailing_list
 	if( !empty( $_REQUEST['subscribe_boardsync'] ) ) {
@@ -93,13 +93,13 @@ if( $gContent->getBoardMailingList() ) {
 	$gBitSmarty->assign( 'boardsMailingList', $gContent->getBoardMailingList() );
 	if ( $gContent->hasUserPermission( 'p_boards_boards_members_view' ) ){
 		$members = mailman_list_members( $gContent->getPreference( 'boards_mailing_list' ) );
-		$gBitSmarty->assignByRef( 'listMembers', $members );
+		$gBitSmarty->assign( 'listMembers', $members );
 	}
 } else {
 	$gBitSmarty->assign( 'suggestedListName', preg_replace( '/[^a-z0-9]/', '', strtolower( $gContent->getTitle() ) ) );
 }
 
 // display
-$gBitSmarty->assignByRef( 'board', $gContent );
+$gBitSmarty->assign( 'board', $gContent );
 $gBitSystem->display( "bitpackage:boards/mailing_list.tpl", $gContent->getTitle() ." ".  tra( 'Message Board Mailing List' ) , array( 'display_mode' => 'list' ));
 ?>

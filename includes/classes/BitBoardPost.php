@@ -14,8 +14,12 @@
 /**
  * required setup
  */
-require_once( LIBERTY_PKG_CLASS_PATH.'LibertyMime.php' );
-require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
+namespace Bitweaver\Boards;
+use Bitweaver\BitBase;
+use Bitweaver\KernelTools;
+use Bitweaver\Liberty\LibertyComment;
+use Bitweaver\Users\RoleUser;
+use Messages;
 
 /**
  * @package boards
@@ -24,7 +28,7 @@ class BitBoardPost extends LibertyComment {
 	/**
 	 * During initialisation, be sure to call our base constructors
 	 */
-	function __construct($pCommentId = NULL, $pContentId = NULL, $pInfo = NULL) {
+	function __construct($pCommentId = null, $pContentId = null, $pInfo = null) {
 		parent::__construct($pCommentId,$pContentId,$pInfo);
 
 		// Permission setup
@@ -36,17 +40,17 @@ class BitBoardPost extends LibertyComment {
 	/**
 	 * This function verifies the data for a post
 	 */
-	function verify( &$pParamHash ) {
+	public function verify( array &$pParamHash ): bool {
 		if( isset( $pParamHash['is_approved'] ) ) {
 			if( !is_numeric( $pParamHash['is_approved'] ) || $pParamHash['is_approved'] > 1 || $pParamHash['is_approved'] < 0 ) {
-				$this->mErrors[]=("Invalid post approved state");
+				$this->mErrors[]= "Invalid post approved state";
 			} else {
 				$pParamHash['post_store']['is_approved'] = $pParamHash['is_approved'];
 			}
 		}
 		if( isset( $pParamHash['is_warned'] ) ) {
 			if( !is_numeric( $pParamHash['warned'] ) || $pParamHash['is_warned'] > 1 || $pParamHash['is_warned'] < 0 ) {
-				$this->mErrors[]=("Invalid warned state");
+				$this->mErrors[]= "Invalid warned state";
 			} else {
 				$pParamHash['post_store']['is_warned'] = $pParamHash['is_warned'];
 			}
@@ -61,15 +65,15 @@ class BitBoardPost extends LibertyComment {
 			$pParamHash['post_store']['migrate_post_id'] = $pParamHash['migrate_post_id'];
 		}
 
-		return( count( $this->mErrors ) == 0 && !empty( $pParamHash['post_store'] ) );
+		return count( $this->mErrors ) == 0 && !empty( $pParamHash['post_store'] );
 	}
 
 	/**
 	 * This function stores a post
 	 */
-	function store( &$pParamHash ) {
+	public function store( array &$pParamHash ): bool {
 		global $gBitSystem;
-		$ret = FALSE;
+		$ret = false;
 		if( $this->mCommentId && $this->verify( $pParamHash ) ) {
 			//$gBitSystem->verifyPermission('p_boards_update');
 			//$pParamHash = (($pParamHash + 1)%2);
@@ -81,7 +85,7 @@ class BitBoardPost extends LibertyComment {
 				$pParamHash['post_store']['comment_id'] = $this->mCommentId;
 				$result = $this->mDb->associateInsert( 'boards_posts', $pParamHash['post_store'] );
 			}
-			$ret = TRUE;
+			$ret = true;
 		}
 		return $ret;
 	}
@@ -89,7 +93,7 @@ class BitBoardPost extends LibertyComment {
 	/**
 	 * This function gets the meta data relating to a post
 	 */
-	function loadMetaData() {
+	public function loadMetaData(): void {
 		if ($this->isValid()) {
 			if (!isset($this->mInfo['accepted'])) {
 				$key = array('comment_id' => $this->mCommentId);
@@ -112,30 +116,28 @@ class BitBoardPost extends LibertyComment {
 	/**
 	* This function removes a bitboard entry
 	**/
-	function expunge() {
-		$ret = FALSE;
+	public function expunge(): bool {
 		if( $this->isValid() ) {
 			$this->StartTrans();
 			// parent actually has deletion of rows in boards for constraint reasons
 			if( parent::expunge() ) {
 				$this->CompleteTrans();
-				$ret = TRUE;
 			} else {
 				$this->mDb->RollbackTrans();
 			}
 		}
-		return $ret;
+		return true;
 	}
 
 	/**
 	 * This function gets all the post relating to a topic
 	 */
-	function getComments( $pContentId = NULL, $pMaxComments = NULL, $pOffset = NULL, $pSortOrder = NULL, $pDisplayMode = NULL ) {
+	public function getComments( $pContentId = null, $pMaxComments = null, $pOffset = null, $pSortOrder = null, $pDisplayMode = null ) {
 		global $gBitUser, $gBitSystem;
 
 		$joinSql = $selectSql = $whereSql = '';
 
-		$ret = array();
+		$ret = [];
 		$contentId = $this->mCommentId;
 
 		$mid = 'thread_forward_sequence  ASC';
@@ -155,7 +157,7 @@ class BitBoardPost extends LibertyComment {
 		}
 		$mid = 'order by ' . $mid;
 
-		$bindVars = array();
+		$bindVars = [];
 		if (is_array( $contentId ) ) {
 			$mid2 = 'in ('.implode(',', array_fill(0, count( $pContentId ), '?')).')';
 			$bindVars = $contentId;
@@ -171,7 +173,7 @@ class BitBoardPost extends LibertyComment {
 			$whereSql .= " AND ((post.`is_approved` = 1) OR (lc.`user_id` >= 0))";
 		}
 
-        $pListHash = array( 'content_id' => $contentId, 'max_records' => $pMaxComments, 'offset'=>$pOffset, 'sort_mode'=> $pSortOrder, 'display_mode' => $pDisplayMode, 'has_comment_view_perm' => TRUE );
+        $pListHash = array( 'content_id' => $contentId, 'max_records' => $pMaxComments, 'offset'=>$pOffset, 'sort_mode'=> $pSortOrder, 'display_mode' => $pDisplayMode, 'has_comment_view_perm' => true );
         $this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, $this, $pListHash );
 
 		if ($pContentId) {
@@ -192,26 +194,22 @@ class BitBoardPost extends LibertyComment {
 						LEFT JOIN `".BIT_DB_PREFIX."boards_posts` post ON (post.`comment_id` = lcom.`comment_id`)
 				    WHERE $mid2 $whereSql $mid";
 
-			$flat_comments = array();
+			$flat_comments = [];
 
 			if( $result = $this->mDb->query( $sql, $bindVars, $pMaxComments, $pOffset ) ) {
 				while( $row = $result->FetchRow() ) {
 					if (empty($row['anon_name'])) {
 						$row['anon_name'] = "Anonymous";
 					}
-					if( $row['avatar_file_name'] ) {
-						$row['user_avatar_url'] = liberty_fetch_thumbnail_url( array(
-							'source_file' => liberty_mime_get_source_file( array( 'user_id'=>$row['avatar_user_id'], 'file_name'=>$row['avatar_file_name'], 'mime_type'=>$row['avatar_mime_type'], 'attachment_id'=>$row['avatar_attachment_id'] ) ),
-							'size' => 'avatar'
-						));
-					} else {
-						$row['user_avatar_url'] = FALSE;
-					}
+					$row['user_avatar_url'] = ( $row['avatar_file_name'] ) ? \Bitweaver\Liberty\liberty_fetch_thumbnail_url( array(
+						'source_file' => \Bitweaver\Liberty\liberty_mime_get_source_file( array( 'user_id' => $row['avatar_user_id'], 'file_name' => $row['avatar_file_name'], 'mime_type' => $row['avatar_mime_type'], 'attachment_id' => $row['avatar_attachment_id'] ) ),
+						'size'        => 'avatar',
+					) ) : false;
 					if (!empty($row['warned_message'])) {
 						$row['warned_message'] = str_replace("\n","<br />\n",$row['warned_message']);
 					}
 					$row['data'] = trim( $row['data'] );
-					$row['user_url'] = BitUser::getDisplayUrlFromHash( $row );
+					$row['user_url'] = RoleUser::getDisplayUrlFromHash( $row );
 					$row['parsed_data'] = self::parseDataHash( $row );
 					$row['level'] = substr_count ( $row['thread_forward_sequence'], '.' ) - 1;
 					$c = new LibertyComment();
@@ -227,7 +225,7 @@ class BitBoardPost extends LibertyComment {
 								if( $func = $gLibertySystem->getPluginFunction( $row2['attachment_plugin_guid'], 'load_function', 'mime' )) {
 									// we will pass the preferences by reference that the plugin can easily update them
 									if( empty( $row['storage'][$row2['attachment_id']] )) {
-										$row['storage'][$row2['attachment_id']] = array();
+										$row['storage'][$row2['attachment_id']] = [];
 									}
 									$row['storage'][$row2['attachment_id']] = $func( $row2, $row['storage'][$row2['attachment_id']] );
 								} else {
@@ -253,19 +251,19 @@ class BitBoardPost extends LibertyComment {
 	/**
 	 * This function gets a list of posts
 	 */
-	function getList( &$pListHash ) {
+	public function getList( &$pListHash ) {
 		global $gBitUser, $gBitSystem;
 
 		$this->prepGetList( $pListHash );
 
 		$joinSql = $selectSql = $whereSql = '';
 
-		$ret = array();
+		$ret = [];
 		$contentId = $this->mCommentId;
 
 //		$mid = 'ORDER BY `thread_forward_sequence` ASC';
 
-		$bindVars = array();
+		$bindVars = [];
 		if( !empty( $pListHash['content_id'] ) ) {
 			if (is_array( $contentId ) ) {
 				$mid2 = 'in ('.implode(',', array_fill(0, count( $pListHash['content_id'] ), '?')).')';
@@ -289,7 +287,7 @@ class BitBoardPost extends LibertyComment {
 			array_push( $bindVars, (int)$pListHash['board_id'] );
 		}
 
-		if( BitBase::verifyId( $pListHash['user_id'] ) ) {
+		if( BitBase::verifyId( $pListHash['user_id'] ?? 0 ) ) {
 			$whereSql .= ' AND lc.`user_id`=? ';
 			array_push( $bindVars, $pListHash['user_id'] );
 		}
@@ -311,25 +309,21 @@ class BitBoardPost extends LibertyComment {
 					LEFT JOIN `".BIT_DB_PREFIX."boards_posts` post ON (post.`comment_id` = lcom.`comment_id`)
 				$whereSql ORDER BY ".$this->mDb->convertSortmode( $pListHash['sort_mode'] );
 
-		$ret = array();
+		$ret = [];
 
 		if( $result = $this->mDb->query( $sql, $bindVars, $pListHash['max_records'], $pListHash['offset'] ) ) {
 			while( $row = $result->FetchRow() ) {
 				if (empty($row['anon_name'])) $row['anon_name'] = "Anonymous";
-				if( !empty( $row['avatar_file_name'] )) {
-					$row['user_avatar_url'] = liberty_fetch_thumbnail_url( array(
-						'source_file' => liberty_mime_get_source_file( array( 'user_id'=>$row['avatar_user_id'], 'file_name'=>$row['avatar_file_name'], 'mime_type'=>$row['avatar_mime_type'], 'attachment_id'=>$row['avatar_attachment_id'] ) ),
-						'size' => 'avatar'
-					));
-				} else {
-					$row['user_avatar_url'] = FALSE;
-				}
+				$row['user_avatar_url'] = ( !empty( $row['avatar_file_name'] ) ) ? \Bitweaver\Liberty\liberty_fetch_thumbnail_url( array(
+					'source_file' => \Bitweaver\Liberty\liberty_mime_get_source_file( array( 'user_id' => $row['avatar_user_id'], 'file_name' => $row['avatar_file_name'], 'mime_type' => $row['avatar_mime_type'], 'attachment_id' => $row['avatar_attachment_id'] ) ),
+					'size'        => 'avatar',
+				) ) : false;
 				unset($row['avatar_file_name']);
 				if (!empty($row['warned_message'])) {
 					$row['warned_message'] = str_replace("\n","<br />\n",$row['warned_message']);
 				}
 				$row['data'] = trim($row['data']);
-				$row['user_url']=BitUser::getDisplayUrlFromHash($row);
+				$row['user_url']=RoleUser::getDisplayUrlFromHash($row);
 				$row['parsed_data'] = self::parseDataHash( $row );
 				$row['level'] = substr_count ( $row['thread_forward_sequence'], '.' ) - 1;
 				$row['topic_id'] = boards_get_topic_comment( $row['thread_forward_sequence'] );
@@ -348,15 +342,15 @@ class BitBoardPost extends LibertyComment {
 	/**
 	 * This function counts the posts relating to a topic
 	 */
-	function getNumComments($pContentId = NULL) {
+	public function getNumComments($pContentId = null) {
 		$ret = 0;
 
 		$contentId = $this->mCommentId;
 
-		$bindVars = array();
+		$bindVars = [];
 
 		$joinSql = $selectSql = $whereSql = '';
-		$paramHash = array( 'include_comments' => TRUE );
+		$paramHash = array( 'include_comments' => true );
 		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, $this, $paramHash );
 
 		if ($pContentId) {
@@ -375,8 +369,8 @@ class BitBoardPost extends LibertyComment {
 	/**
 	 * This function generates a valid lookup URL
 	 */
-	function getDisplayUrl() {
-		$ret = NULL;
+	public function getDisplayUrl() {
+		$ret = null;
 		if( $this->isValid() ) {
 			$urlHash['comment_id'] = $this->mCommentId;
 			$urlHash['topic_id'] = $this->getTopicId();
@@ -387,12 +381,12 @@ class BitBoardPost extends LibertyComment {
 
 	/**
 	 * Generates the URL to the bitboard page
-	 * @return the link to display the page.
+	 * @return string link to display the page.
 	 */
 	public static function getDisplayUrlFromHash( &$pParamHash ) {
 		global $gBitSystem;
 
-		$ret = NULL;
+		$ret = null;
 		if( static::verifyId( $pParamHash['comment_id'] ) ) {
 			if( $gBitSystem->isFeatureActive( 'pretty_urls' ) || $gBitSystem->isFeatureActive( 'pretty_urls_extended' ) ) {
 				$rewrite_tag = $gBitSystem->isFeatureActive( 'pretty_urls_extended' ) ? 'view/' : '';
@@ -408,20 +402,31 @@ class BitBoardPost extends LibertyComment {
 		return $ret;
 	}
 
-	function getTopicId() {
+	/**
+	 * Summary of getContactUrl
+	 * @return string
+	 */
+	public function getContactUrl(): string {
+		return '';
+	}
+	/**
+	 * Summary of getTopicId
+	 * @return int
+	 */
+	public function getTopicId() {
 		return boards_get_topic_comment( $this->getField( 'thread_forward_sequence') );
 	}
 
-	function modApprove() {
+	public function modApprove() {
 		$data['is_approved'] = 1;
 		$this->setMetaData($data);
 	}
 
-	function modReject() {
+	public function modReject() {
 		$this->deleteComment();
 	}
 
-	function modWarn($message) {
+	public function modWarn($message) {
 		global $gBitSystem, $gBitUser;
 
 		if (empty($message)) {
@@ -432,27 +437,25 @@ class BitBoardPost extends LibertyComment {
 		$this->setMetaData($data);
 
 		if ($gBitSystem->isPackageActive('messages')) {
-			require_once(MESSAGES_PKG_CLASS_PATH.'Messages.php');
-
-			$u = new BitUser($this->mInfo['user_id']);
+			$u = new RoleUser($this->mInfo['user_id']);
 			$u->load();
 			$userInfo = $u->mInfo;
 
 			$pm = new Messages();
 			$message = "Your post \"".$this->mInfo['title']."\" [http://".$_SERVER['HTTP_HOST'].$this->getContactUrl()."] has been warned with the following message:\n$message\n";
-			$msgHash = array(
+			$msgHash = [
 				'to_login' => $userInfo['login'],
 				'to'       => $userInfo['real_name'],
-				'subject'  => tra( 'Warned Post' ).': '.$this->mInfo['title'],
+				'subject'  => KernelTools::tra( 'Warned Post' ) . ': ' . $this->mInfo['title'],
 				'priority' => 4,
-			);
+			];
 			$pm->postMessage( $msgHash );
 		}
 	}
 
-	function setMetaData($data) {
+	public function setMetaData($data) {
 		if ($this->isValid()) {
-			$key = array('comment_id' => $this->mCommentId);
+			$key = [ 'comment_id' => $this->mCommentId ];
 			$query_sel = "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."boards_posts` WHERE comment_id=?";
 			$c = $this->mDb->getOne( $query_sel , array_values($key));
 			if ($c == 0) {
@@ -465,4 +468,3 @@ class BitBoardPost extends LibertyComment {
 		}
 	}
 }
-?>

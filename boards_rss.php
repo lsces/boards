@@ -24,7 +24,7 @@ if( !empty( $_REQUEST['t'] ) || !empty($_REQUEST['b'] ) ){
 		$gContent->load();
 	}
 	else{
-		$gBitSystem->fatalError(tra("Unknown discussion"), NULL, NULL, HttpStatusCodes::HTTP_GONE );
+		$gBitSystem->fatalError(tra("Unknown discussion"), null, null, HttpStatusCodes::HTTP_GONE );
 	}
 }
 $gContent->verifyViewPermission();
@@ -73,7 +73,7 @@ switch( $gContent->getField('content_type_guid') ){
 	case 'bitboard':
 	default:
 		$topic = new BitBoardTopic();
-		$pParamHash = array();
+		$pParamHash = [];
 		if( !empty( $_REQUEST['b'] ) ) {
 			$pParamHash['b'] = $_REQUEST['b'];
 		}
@@ -128,10 +128,10 @@ foreach( $feeds as $feed ) {
 	}
 
 	$user->load();
-	$item->author = $user->getDisplayName();//$gBitUser->getDisplayName( FALSE, array( 'user_id' => $feed['modifier_user_id'] ) );
+	$item->author = $user->getDisplayName();//$gBitUser->getDisplayName( false, array( 'user_id' => $feed['modifier_user_id'] ) );
 	$item->authorEmail = $user->mInfo['email'];
 	$item->descriptionTruncSize = $gBitSystem->getConfig( 'rssfeed_truncate', 1000 );
-	$item->descriptionHtmlSyndicated = FALSE;
+	$item->descriptionHtmlSyndicated = false;
 	/*
 	var_dump($item);
 	echo "</pre>";

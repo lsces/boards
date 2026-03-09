@@ -1,25 +1,82 @@
-form.mb-threading div			{display:inline;}
-.boards .mb-threading			{}
+form.mb-threading div {
+	display: inline;
+}
 
-.boards tr.odd.unapproved		{background:#faa;}
-.boards tr.even.unapproved		{background:#fac;}
-.boards tr.odd.moved			{background:#aaf;}
-.boards tr.even.moved			{background:#acf;}
-.boards div.indent .indent		{margin-left:2em;}
-.boards tr.highlight			{background:#fca;}
-.boards .mb-post .warning		{}
+.boards .mb-threading {}
 
-.boards .mb-post .indent1		{margin-left:20px;}
-.boards .mb-post .indent2		{margin-left:35px;}
-.boards .mb-post .indent3		{margin-left:50px;}
-.boards .mb-post .indent4		{margin-left:60px;}
-.boards .mb-post .indent5		{margin-left:70px;}
-.boards .mb-post .indent6		{margin-left:80px;}
-.boards .mb-post .indent7		{margin-left:90px;}
+.boards tr.odd.unapproved {
+	background: #faa;
+}
 
-.boards .mb-post 				{clear:both;}
-.boards .mb-post .content		{width:auto}
-.boards .mb-post .header		{}
-.boards .mb-post .userinfo		{float:left;width:140px;}
-.boards .mb-post .showavatar	{margin-left:145px;}
-.boards .mb-post .signature	{clear:both;}
+.boards tr.even.unapproved {
+	background: #fac;
+}
+
+.boards tr.odd.moved {
+	background: #aaf;
+}
+
+.boards tr.even.moved {
+	background: #acf;
+}
+
+.boards div.indent .indent {
+	margin-left: 2em;
+}
+
+.boards tr.highlight {
+	background: #fca;
+}
+
+.boards .mb-post .warning {}
+
+.boards .mb-post .indent1 {
+	margin-left: 20px;
+}
+
+.boards .mb-post .indent2 {
+	margin-left: 35px;
+}
+
+.boards .mb-post .indent3 {
+	margin-left: 50px;
+}
+
+.boards .mb-post .indent4 {
+	margin-left: 60px;
+}
+
+.boards .mb-post .indent5 {
+	margin-left: 70px;
+}
+
+.boards .mb-post .indent6 {
+	margin-left: 80px;
+}
+
+.boards .mb-post .indent7 {
+	margin-left: 90px;
+}
+
+.boards .mb-post {
+	clear: both;
+}
+
+.boards .mb-post .content {
+	width: auto
+}
+
+.boards .mb-post .header {}
+
+.boards .mb-post .userinfo {
+	float: left;
+	width: 140px;
+}
+
+.boards .mb-post .showavatar {
+	margin-left: 145px;
+}
+
+.boards .mb-post .signature {
+	clear: both;
+}

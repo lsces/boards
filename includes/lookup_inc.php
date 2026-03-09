@@ -11,12 +11,12 @@ require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php');
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardPost.php' );
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoard.php' );
 // if t supplied, use that
-if( @BitBase::verifyId( $_REQUEST['t'] ) ) {
+if( BitBase::verifyId( $_REQUEST['t'] ?? 0 ) ) {
 	$gContent = new BitBoardTopic( $_REQUEST['t'] );
 // if p supplied, use that
-} elseif( @BitBase::verifyId( $_REQUEST['p'] ) ) {
+} elseif( BitBase::verifyId( $_REQUEST['p'] ?? 0 ) ) {
 	$gContent = new BitBoardPost( $_REQUEST['p'] );
-} elseif( @BitBase::verifyId( $_REQUEST['b'] ) ) {
+} elseif( BitBase::verifyId( $_REQUEST['b'] ?? 0 ) ) {
 	$gContent = new BitBoard( $_REQUEST['b'] );
 } elseif (isset($_REQUEST['p'])) {
 	$gContent = new BitBoardPost();
@@ -28,6 +28,6 @@ if( @BitBase::verifyId( $_REQUEST['t'] ) ) {
 }
 
 $gContent->load();
-$gBitSmarty->assignByRef( "gContent", $gContent );
+$gBitSmarty->assign( "gContent", $gContent );
 
 ?>

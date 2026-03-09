@@ -24,7 +24,7 @@ if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQU
 		// user cancelled - just continue on, doing nothing
 	} elseif( empty( $_REQUEST['confirm'] ) ) {
 		$formHash['b'] = $_REQUEST['b'];
-		$formHash['delete'] = TRUE;
+		$formHash['delete'] = true;
 		$formHash['submit_mult'] = 'remove_boards';
 		foreach( $_REQUEST["checked"] as $del ) {
 			$formHash['input'][] = '<input type="hidden" name="checked[]" value="'.$del.'"/>';
@@ -40,12 +40,12 @@ if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQU
 			$deleteComment = new LibertyComment( $deleteId );
 			if( $deleteComment->isValid() && $gBitUser->hasPermission('p_liberty_admin_comments') ) {
 				if( !$deleteComment->expunge() ) {
-					$gBitSmarty->assignByRef( 'errors', $deleteComment->mErrors );
+					$gBitSmarty->assign( 'errors', $deleteComment->mErrors );
 				}
 			}
 		}
 		if( !empty( $errors ) ) {
-			$gBitSmarty->assignByRef( 'errors', $errors );
+			$gBitSmarty->assign( 'errors', $errors );
 		}
 	}
 }

@@ -32,7 +32,7 @@ if( !empty( $module_params['b'] ) ) {
 } elseif( !empty( $_REQUEST['b'] ) && empty( $module_params['all_boards'] ) ) {
 	$listHash['board_id'] = $_REQUEST['b'];
 }
-$_template->tpl_vars['modRecentPostsBoardId'] = new Smarty_variable( !empty( $listHash['board_id'] ) );
+$gBitSmarty->assign( 'modRecentPostsBoardId', !empty( $listHash['board_id'] ) );
 
 if( BitBase::verifyId( $gQueryUserId ) ) {
 	$listHash['user_id'] = $gQueryUserId;
@@ -40,7 +40,7 @@ if( BitBase::verifyId( $gQueryUserId ) ) {
 
 $post = new BitBoardPost();
 if( $postList = $post->getList( $listHash ) ) {
-	$_template->tpl_vars['modLastBoardPosts'] = new Smarty_variable( $postList );
+	$gBitSmarty->assign( 'modLastBoardPosts', $postList );
 }
 
 ?>

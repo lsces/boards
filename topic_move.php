@@ -7,7 +7,7 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'boards' );
@@ -44,7 +44,7 @@ if( isset( $_REQUEST["target"] ) ) {
 
 // get list of boards we can move the topic to
 $boards = $board->getBoardSelectList();
-$gBitSmarty->assignByRef('boards', $boards);
+$gBitSmarty->assign('boards', $boards);
 
 $gBitSmarty->assign('fromBoardId', $board->mContentId);
 

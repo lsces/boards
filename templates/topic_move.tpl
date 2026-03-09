@@ -4,7 +4,7 @@
 
 <div class="admin boards">
 	<div class="header">
-		<h1>{tr}Move Topic{/tr}: {$gContent->mInfo.title|escape}</h1>
+		<h1>Move Topic: {$gContent->mInfo.title|escape}</h1>
 	</div>
 
 	<div class="body">
@@ -21,13 +21,13 @@
 								<option value="{$content_id|escape}">{$board_title|escape}</option>
 							{/if}
 						{foreachelse}
-							<option>{tr}No records found{/tr}</option>
+							<option>No records found</option>
 						{/foreach}
 					</select>
 				{/forminput}
 			</div>
 			<div class="form-group submit">
-				<input type="submit" class="btn btn-default" name="move_thread" value="{tr}Move Topic{/tr}" />
+				<input type="submit" class="btn btn-default" name="move_thread" value="Move Topic" />
 			</div>
 		{/form}
 	</div><!-- end .body -->

@@ -1,7 +1,7 @@
 {strip}
 <div class="admin boards">
 	<div class="header">
-		<h1>{tr}Assign Content to Boards{/tr}</h1>
+		<h1>Assign Content to Boards</h1>
 	</div>
 
 	<div class="body">
@@ -36,7 +36,7 @@
 				</div>
 
 				<div class="form-group submit">
-					<input type="submit" class="btn btn-default" value="{tr}Assign Content to Board{/tr}" name="action" />
+					<input type="submit" class="btn btn-default" value="Assign Content to Board" name="action" />
 				</div>
 			{/form}
 		{else}
@@ -47,7 +47,7 @@
 			{if $board.map}
 				{capture assign=title}
 					{if ! $board.integrity}
-						{booticon iname="fa-triangle-exclamation" iexplain="Integrity Check Failed"}
+						{booticon iname="icon-warning-sign"   iexplain="Integrity Check Failed"}
 					{/if}
 					{$board.title|escape}
 				{/capture}
@@ -56,19 +56,19 @@
 					{if ! $board.integrity}
 						<div class="floaticon">
 							<a href="{$smarty.const.BOARDS_PKG_URL}assign.php?integrity={$board.board_id}#board{$smarty.foreach.board_loop.iteration}">
-								{booticon iname="fa-triangle-exclamation" iexplain="Fix Integrity"}
+								{booticon iname="icon-warning-sign"  ipackage="icons"  ipath="large" iexplain="Fix Integrity"}
 							</a>
 						</div>
 						{formfeedback warning="Integrity Check Failed"}
 					{/if}
 
 					<table class="table data">
-						<caption>{tr}Assigned Content{/tr}</caption>
+						<caption>Assigned Content</caption>
 						<tr>
-							<th style="width:15%;">{tr}Content Type{/tr}</th>
-							<th style="width:55%;">{tr}Content Title{/tr}</th>
-							<th style="width:15%;">{tr}Posts{/tr}</th>
-							<th style="width:15%;">{tr}Action{/tr}</th>
+							<th style="width:15%;">Content Type</th>
+							<th style="width:55%;">Content Title</th>
+							<th style="width:15%;">Posts</th>
+							<th style="width:15%;">Action</th>
 						</tr>
 
 						{foreach item=mapping from=$board.map}
@@ -78,14 +78,14 @@
 								<td style="text-align:right">{$mapping.thread_count}</td>
 								<td class="actionicon">
 									<input type="checkbox" name="remove[{$board.board_id}][{$mapping.t_content_id}]" value="1" />
-									<a title="{tr}Remove from board{/tr}" href="{$smarty.const.BOARDS_PKG_URL}assign.php?remove[{$board.board_id}][{$mapping.t_content_id}]=1#board{$smarty.foreach.board_loop.iteration}">{booticon iname="fa-trash" iexplain="Remove from board"}</a>
+									<a title="Remove from board" href="{$smarty.const.BOARDS_PKG_URL}assign.php?remove[{$board.board_id}][{$mapping.t_content_id}]=1#board{$smarty.foreach.board_loop.iteration}">{booticon iname="icon-trash" ipackage="icons" iexplain="Remove from board"}</a>
 								</td>
 							</tr>
 						{/foreach}
 					</table>
 
 					<div class="form-group submit">
-						<input type="submit" class="btn btn-default" value="{tr}Remove{/tr}" name="action" />
+						<input type="submit" class="btn btn-default" value="Remove" name="action" />
 					</div>
 				{/form}
 			{/if}

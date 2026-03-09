@@ -9,7 +9,7 @@
 /**
  * required setup
  */
-require_once( '../kernel/includes/setup_inc.php' );
+require_once '../kernel/includes/setup_inc.php';
 
 $gBitSystem->verifyPackage( 'boards' );
 $gBitSystem->verifyPackage( 'rss' );
@@ -41,7 +41,7 @@ if( !empty( $_REQUEST['get_feed'] ) ) {
 		} 
 	}
 	$feedlink['url'] .= 'version='.$_REQUEST['format'].( $gBitSystem->getConfig( 'rssfeed_httpauth' ) && $gBitUser->isRegistered()?'&httpauth=y':'');
-	$feedlink['title'] = ( $gContent->getField('title') != NULL ?$gContent->getField('title'):tra('Boards')).' - '.$feedFormat[$_REQUEST['format']];
+	$feedlink['title'] = ( $gContent->getField('title') != null ?$gContent->getField('title'):tra('Boards')).' - '.$feedFormat[$_REQUEST['format']];
 	$feedlink['format'] = $_REQUEST['format'];
 } else {
 	$feedlink['format'] = $gBitSystem->getConfig( 'rssfeed_default_version' );

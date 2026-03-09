@@ -1,5 +1,5 @@
 {strip}
-{if $comments_style eq 'threaded' && $comment.level}
+{if $comments_style eq 'threaded' and $comment.level}
 	<div style="margin-left:20px">
 {else}
 	<div style="margin-left:0px">
@@ -13,10 +13,10 @@
 			{else}
 				<strong>{displayname hash=$comment}</strong>
 				<br />
-				{if $comment.user_id != $smarty.const.ANONYMOUS_USER_ID && !empty($comment.user_avatar_url)}
-					<div><a href="{$comment.user_url}"><img src="{$comment.user_avatar_url}" class="img-responsive" alt="{tr}Profile Picture{/tr}" /></a></div>
+				{if $comment.user_id != $smarty.const.ANONYMOUS_USER_ID and !empty($comment.user_avatar_url)}
+					<div><a href="{$comment.user_url}"><img src="{$comment.user_avatar_url}" class="img-responsive" alt="Profile Picture" /></a></div>
 				{/if}
-				<div class="date">{tr}Joined: {/tr}{$comment.registration_date|bit_short_date}</div>
+				<div class="date">Joined: {$comment.registration_date|bit_short_date}</div>
 			{/if}
 		</div>
 
@@ -25,29 +25,31 @@
 	<div class="wrapper{if $gBitUser->getPreference('boards_show_avatars','y') == 'y'} showavatar{/if}{if $smarty.request.comments_style eq 'threaded'} indent{$comment.level}{/if}">
 		{if !$post_is_preview}
 			<div class="floaticon">
-				{if $print_page ne 'y' && $comment.deleted==0 }
-					{if !$topic_locked && $board->hasPostCommentsPermission()}
-						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{booticon iname="fa-comment" iexplain="Reply to this Post"}</a>
-						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1&amp;quote=y#editcomments" rel="nofollow">{booticon iname="fa-comment-quote" iexplain="Reply with Quote to this Post"}</a>
+				{if $print_page ne 'y' and $comment.deleted==0 }
+					{if !$topic_locked and $board->hasPostCommentsPermission()}
+						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{booticon iname="icon-comment-alt"  ipackage="icons"  iexplain="Reply to this Post" iforce="icon"}</a>
 					{/if}
-					{if $comment.is_editable || $gContent->hasUserPermission('p_liberty_edit_comments')}
-						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{booticon iname="fa-pen-to-square" iexplain="Edit"}</a>
+					{if !$topic_locked and $board->hasPostCommentsPermission()}
+						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1&amp;quote=y#editcomments" rel="nofollow">{booticon ipackage="icons" iname="icon-comment" iexplain="Reply with Quote to this Post" iforce="icon"}</a>
+					{/if}
+					{if $comment.is_editable or $gContent->hasUserPermission('p_liberty_edit_comments')}
+						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{booticon iname="icon-edit" ipackage="icons" iexplain="Edit" iforce="icon"}</a>
 					{/if}
 					{if $board->hasUserPermission( 'p_liberty_admin_comments' )}
-						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{booticon iname="fa-trash" iexplain="Remove"}</a>
+						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{booticon iname="icon-trash" ipackage="icons" iexplain="Remove" iforce="icon"}</a>
 					{/if}
-					{if $board->hasUpdatePermission() && (($comment.user_id<0 && $comment.is_approved==0)||$comment.user_id>=0) && !$comment.is_warned}
-						{if $comment.user_id<0 && $comment.is_approved==0}
-							<a title="{tr}Approve this post{/tr}" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=1&amp;comment_id={$comment.comment_id}">
-								{booticon iname="fa-circle-plus" iexplain="Approve Post"}
+					{if $board->hasUpdatePermission() and (($comment.user_id<0 and $comment.is_approved==0)or$comment.user_id>=0) and !$comment.is_warned}
+						{if $comment.user_id<0 and $comment.is_approved==0}
+							<a title="Approve this post" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=1&amp;comment_id={$comment.comment_id}">
+								{booticon iname="icon-plus-sign"  ipackage="icons"  iexplain="Approve Post" iforce="icon"}
 							</a>
 
-							<a title="{tr}Reject this post{/tr}" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=2&amp;comment_id={$comment.comment_id}">
-								{booticon iname="fa-circle-minus" iexplain="Reject Post"}
+							<a title="Reject this post" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=2&amp;comment_id={$comment.comment_id}">
+								{booticon iname="icon-minus-sign"  ipackage="icons"  iexplain="Reject Post" iforce="icon"}
 							</a>
-						{elseif !$comment.is_warned && $comment.user_id>=0}
-							<a onclick="return BitBoards.warn( 'warn_block_{$comment.comment_id|escape:"url"}', this )" title="{tr}Warn the poster about this post{/tr}" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=3&amp;comment_id={$comment.comment_id}">
-								{booticon iname="fa-triangle-exclamation" iexplain="Warn Post"}
+						{elseif !$comment.is_warned and $comment.user_id>=0}
+							<a onclick="return BitBoards.warn( 'warn_block_{$comment.comment_id|escape:"url"}', this )" title="Warn the poster about this post" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=3&amp;comment_id={$comment.comment_id}">
+								{booticon iname="icon-warning-sign"  ipackage="icons"  iexplain="Warn Post" iforce="icon"}
 							</a>
 
 							<div class="warn_block" style="display:none;" id="warn_block_{$comment.comment_id|escape:"url"}">
@@ -70,13 +72,13 @@
 			{if $comment.title neq ""}<h2>{$comment.title|escape}</h2>{/if}
 			<span class="date">
 				{if $gBitUser->getPreference('boards_show_avatars','y') != 'y'}
-					{tr}Posted by{/tr}: {if $comment.user_id < 0}{$comment.unreg_uname|escape}{else}{displayname hash=$comment}{/if}, 
+					Posted by: {if $comment.user_id < 0}{$comment.unreg_uname|escape}{else}{displayname hash=$comment}{/if}, 
 				{else}
-					{tr}Posted{/tr}: 
+					Posted: 
 				{/if}
 				{$comment.created|reltime}
-				{if $board->hasAdminPermission() && $comment.last_modified != $comment.created}
-					<em> {tr}Last modified{/tr}:
+				{if $board->hasAdminPermission() and $comment.last_modified != $comment.created}
+					<em> Last modified:
 					{if $comment.user_id < 0}
 						{$comment.unreg_uname|escape}
 					{else}
@@ -111,7 +113,7 @@
 						');
 					return false;
 					" href="{$thread_mInfo.display_url}&amp;warning[{$comment_id}]={if empty($warnings.$comment_id)}show{else}hide{/if}"
-				>{booticon iname="fa-triangle-exclamation" iexplain="Warned Post"}</a>
+				>{booticon ipackage="icons" iname="icon-warning-sign" iexplain="Warned Post"}</a>
 
 				<div id="warned_message_{$comment.comment_id|escape:"url"}">
 					{if !empty($warnings.$comment_id)}{$comment.warned_message}{/if}

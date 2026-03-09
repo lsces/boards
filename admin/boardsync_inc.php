@@ -1,8 +1,8 @@
 <?php
-function board_sync_run($pLog = FALSE) {
+function board_sync_run($pLog = false) {
 	global $gBitUser, $gBitSystem;
 
-	$gBitUser->setPermissionOverride('p_users_bypass_captcha', TRUE);
+	$gBitUser->setPermissionOverride('p_users_bypass_captcha', true);
 
 	$connectionString = '{'.$gBitSystem->getConfig('boards_sync_mail_server','imap').':'.$gBitSystem->getConfig('boards_sync_mail_port','993').'/'.$gBitSystem->getConfig('boards_sync_mail_protocol','imap').'/ssl/novalidate-cert}';
 	
@@ -18,7 +18,7 @@ function board_sync_run($pLog = FALSE) {
 			if( $messageNumbers = imap_sort( $mbox, SORTDATE, 0 ) ) {
 				foreach( $messageNumbers as $msgNum ) {
 					if ($pLog) print "Processing Msg#: ".$msgNum."\n";
-					$deleteMsg = FALSE;
+					$deleteMsg = false;
 					$header = imap_headerinfo( $mbox, $msgNum );
 					
 					// Is this a moderation message?
@@ -57,10 +57,10 @@ function board_sync_run($pLog = FALSE) {
 						// Is this a reminder message that we just skip?
 					} elseif( preg_match('/[0-9]+ .*? moderator request.* waiting/', $header->subject) ) {
 						if ($pLog) print "Deleting reminder.\n";
-						$deleteMsg = TRUE;
+						$deleteMsg = true;
 					} elseif( preg_match('/Welcome to the .* mailing list/', $header->subject) ) {
 						if ($pLog) print "Deleting welcome message.\n";
-						$deleteMsg = TRUE;
+						$deleteMsg = true;
 					} else {
 						// imap_headerinfo acts retarded on these emails and improperly parses the header unless we call fetchstructure first - so do it.
 						// note this problem does not occure above when parsing the temp email in a moderated msg - god damn spooky
@@ -69,7 +69,7 @@ function board_sync_run($pLog = FALSE) {
 						// With multiple To: recipients it is often handy to know who the message is "Delivered-To" by the MTA
 						$raw_headers = imap_fetchheader($mbox, $msgNum);
 						$deliveredTo = board_sync_delivered_to($raw_headers);
-						$deleteMsg = board_sync_process_message( $mbox, $msgNum, $msgHeader, $msgStructure, FALSE, $pLog, $deliveredTo);
+						$deleteMsg = board_sync_process_message( $mbox, $msgNum, $msgHeader, $msgStructure, false, $pLog, $deliveredTo);
 						//					vd($deleteMsg);
 					}
 					if( $deleteMsg && empty( $gDebug ) && empty( $gArgs['test'] ) ) {
@@ -191,7 +191,7 @@ function board_sync_get_user( $pFrom ) {
 	return $gBitUser->getUserInfo( array( 'user_id'=>-1 ) );
 }
 
-function cache_check_content_prefs( $pName, $pValue, $pLower = FALSE ) {
+function cache_check_content_prefs( $pName, $pValue, $pLower = false ) {
 	global $gBitDb, $gBitSystem;
 	static $prefs;
 
@@ -206,13 +206,13 @@ function cache_check_content_prefs( $pName, $pValue, $pLower = FALSE ) {
 		return $prefs[$pLower][$pName][$pValue];
 	}
 
-	return NULL;
+	return null;
 }
 
 /**
  * $pMsgHeader is a imap_headerinfo generated array
  **/
-function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructure, $pModerate = FALSE , $pLog=FALSE, $pDeliveredTo=NULL) {
+function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructure, $pModerate = false , $pLog=false, $pDeliveredTo=null) {
 	global $gBitSystem, $gBitDb;
 	// vd( $pMsgHeader );
 
@@ -231,8 +231,8 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 		if ($pLog) print("  Subject: ".$subject."\n");
 
 
-		$matches = array();
-		$toAddresses = array();
+		$matches = [];
+		$toAddresses = [];
 		$allRecipients = "";
 		if (empty($pDeliveredTo)) {
 			if( isset( $pMsgHeader->toaddress ) ){
@@ -248,8 +248,8 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 			$allSplit = split( ',', $allRecipients );
 			foreach( $allSplit as $s ) {
 				$s = trim( $s );
-				$matches = array();
-				if( strpos( $s, '<' ) !== FALSE ) {
+				$matches = [];
+				if( strpos( $s, '<' ) !== false ) {
 					if( preg_match( "/\s*(.*)\s*<\s*(.*)\s*>/", $s, $matches ) ) {
 						$toAddresses[] = array( 'name'=>$matches[1], 'email'=>$matches[2] );
 					} elseif( preg_match('/<\s*(.*)\s*>\s*(.*)\s*/', $s, $matches) ) {
@@ -282,12 +282,12 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 		foreach( $toAddresses AS $to ) {
 			if ($pLog) print( "  Processing email: " . strtolower($to['email']) . "\n");
 			// get a board match for the email address
-			if( $boardContentId = cache_check_content_prefs( 'board_sync_list_address', strtolower($to['email']), TRUE ) ) {
+			if( $boardContentId = cache_check_content_prefs( 'board_sync_list_address', strtolower($to['email']), true ) ) {
 				if ($pLog) print "Found Board Content $boardContentId for $to[email]\n";
 
 				// Do we already have this message in this board?
-				$contentId = NULL;
-				if( $message_id != NULL ) {
+				$contentId = null;
+				if( $message_id != null ) {
 					$sql = "SELECT `content_id` FROM `".BIT_DB_PREFIX."liberty_comments` WHERE `message_guid`=? AND `root_id`=?";
 					$contentId = $gBitDb->getOne( $sql, array( $message_id, $boardContentId ) );
 				}
@@ -312,7 +312,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					}
 					$userInfo = board_sync_get_user( $fromaddress );
 					// prep the storage hash
-					$storeRow = array();
+					$storeRow = [];
 					$storeRow['created'] = strtotime( $date );
 					$storeRow['last_modified'] = $storeRow['created'];
 					$storeRow['user_id'] = $userInfo['user_id'];
@@ -325,7 +325,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					$storeRow['root_id'] = $rootId;
 					$storeRow['parent_id'] = $replyId;
 					
-					$partHash = array();
+					$partHash = [];
 					
 					switch( $pMsgStructure->type ) {
 					case '0':
@@ -403,7 +403,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					if( $userInfo['user_id'] != ANONYMOUS_USER_ID ) {
 						$userClass = $gBitSystem->getConfig( 'user_class', 'BitPermUser' );
 						$newBitUser = new $userClass( $userInfo['user_id'] );
-						$newBitUser->load( TRUE );
+						$newBitUser->load( true );
 					}
 					if( !empty( $newBitUser ) && $newBitUser->isValid() ){
 						// flip gBitUser to our message sender
@@ -411,7 +411,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					}
 				
 					// Load the parent board
-					$board = new BitBoard( NULL, $boardContentId );
+					$board = new BitBoard( null, $boardContentId );
 					$board->load();
 				
 					// Check the permission for the user on the board
@@ -440,7 +440,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					}
 				
 				
-					$storeComment = new LibertyComment( NULL );
+					$storeComment = new LibertyComment( null );
 					$gBitDb->StartTrans();
 					if( $storeComment->storeComment($storeRow) ) {
 						// undo the attachment permission
@@ -449,12 +449,12 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 						// set moderation approval
 						if( !$pModerate && $gBitSystem->isPackageActive('moderation') && $gBitSystem->isPackageActive('modcomments') ) {
 							global $gModerationSystem, $gBitUser;
-							$moderation = $gModerationSystem->getModeration(NULL, $storeComment->mContentId);
+							$moderation = $gModerationSystem->getModeration(null, $storeComment->mContentId);
 							if( !empty($moderation) ) {
 								// Allow to moderate
-								$gBitUser->setPermissionOverride('p_admin', TRUE);
+								$gBitUser->setPermissionOverride('p_admin', true);
 								$gModerationSystem->setModerationReply($moderation['moderation_id'], MODERATION_APPROVED);
-								$gBitUser->setPermissionOverride('p_admin', FALSE);
+								$gBitUser->setPermissionOverride('p_admin', false);
 							}
 						}
 					
@@ -469,44 +469,44 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 						
 							// done
 							$gBitDb->CompleteTrans();
-							return TRUE;
+							return true;
 						}else{
 							bit_error_log( "Email sync error: Message Id not set. You shouldn't have even gotten this far." );
 							$gBitDb->RollbackTrans();
-							return FALSE;
+							return false;
 						}
 					} else {
 						if( count( $storeComment->mErrors ) == 1 && !empty( $storeComment->mErrors['store'] ) && $storeComment->mErrors['store'] == 'Duplicate comment.' ) {
-							return TRUE;
+							return true;
 						} else {
 							foreach( $storeComment->mErrors as $error ){
 								bit_error_log( $error );
 							}
 							$gBitDb->RollbackTrans();
-							return FALSE;
+							return false;
 						}
 					}
 
 				} else {
 					if ($pLog) print "Message Exists: $contentId : $boardContentId : $message_id : $pModerate\n";
 					// If this isn't a moderation message
-					if( $pModerate === FALSE ) {
+					if( $pModerate === false ) {
 						// If the message exists it must have been approved via some
 						// moderation mechanism, so make sure it is available
 						if( $gBitSystem->isPackageActive('moderation') && $gBitSystem->isPackageActive('modcomments') ) {
 							global $gModerationSystem, $gBitUser;
-							$storeComment = new LibertyComment( NULL, $contentId );
+							$storeComment = new LibertyComment( null, $contentId );
 							$storeComment->loadComment();
 							if ($storeComment->mInfo['content_status_id'] > 0) {
 								if ($pLog) print "Already approved: $contentId\n";
 							} else {
-								$moderation = $gModerationSystem->getModeration(NULL, $contentId);
+								$moderation = $gModerationSystem->getModeration(null, $contentId);
 								//				vd($moderation);
 								if( !empty($moderation) ) {
-									$gBitUser->setPermissionOverride('p_admin', TRUE);
+									$gBitUser->setPermissionOverride('p_admin', true);
 									if ($pLog) print( "Setting approved: $contentId\n" );
 									$gModerationSystem->setModerationReply($moderation['moderation_id'], MODERATION_APPROVED);
-									$gBitUser->setPermissionOverride('p_admin', FALSE);
+									$gBitUser->setPermissionOverride('p_admin', false);
 									if ($pLog) print "Done";
 								} else {
 									if ($pLog) print "ERROR: Unable to find moderation to approve for: $contentId";
@@ -516,17 +516,17 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					} else {
 						// Store the approve code;
 						if ($pLog) print "Storing approval code: " . $contentId . ":" . $pModerate . "\n";
-						$storeComment = new LibertyComment( NULL, $contentId );
+						$storeComment = new LibertyComment( null, $contentId );
 						$storeComment->storePreference('board_confirm_code', $pModerate);
 					}
-					return TRUE;
+					return true;
 				}
 			} else {
 				if ($pLog) print "No Board match found for $to[email]\n";
 			}
 		}
 	}
-	return FALSE;
+	return false;
 }
 
 function board_sync_raw_headers($body) {
@@ -535,7 +535,7 @@ function board_sync_raw_headers($body) {
 }
 
 function board_sync_get_header($header, $body) {
-	$ret = NULL;
+	$ret = null;
 	preg_match( '/^'.$header.':\s*(.*?)\s*$/m', $body, $matches);
 	if (!empty($matches[1])) {
 		$ret = $matches[1];
@@ -545,7 +545,7 @@ function board_sync_get_header($header, $body) {
 
 // $header is imap_headerinfo array
 function board_sync_get_headerinfo( $header, $key ){
-	$ret = NULL;
+	$ret = null;
 	if( isset( $header->$key ) ){
 		$ret = $header->$key;
 	}
@@ -556,7 +556,7 @@ function board_sync_delivered_to( $raw_headers ) {
 	$ret = null;
 	if (isset($raw_headers) && 
 	    preg_match_all("/Delivered-To:\s*(.*)\s*/", $raw_headers, $deliveredTo) > 0) {
-		$ret = array();
+		$ret = [];
 		foreach ($deliveredTo[1] as $address) {
 			// Make sure the Delivered-To: address is valid.
 			if (validate_email_syntax( $address ) ) {
@@ -573,10 +573,10 @@ function is_utf8($string) {
           [\x09\x0A\x0D\x20-\x7E]            # ASCII
         | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
         |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs
-        | [\xE1-\xEC\xEE\xEF][\x80-\xBF]{2}  # straight 3-byte
+        | [\xE1-\xEC\xEE\xEF][\x80-\xBF][2]  # straight 3-byte
         |  \xED[\x80-\x9F][\x80-\xBF]        # excluding surrogates
-        |  \xF0[\x90-\xBF][\x80-\xBF]{2}     # planes 1-3
-        | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
-        |  \xF4[\x80-\x8F][\x80-\xBF]{2}     # plane 16
+        |  \xF0[\x90-\xBF][\x80-\xBF][2]     # planes 1-3
+        | [\xF1-\xF3][\x80-\xBF][3]          # planes 4-15
+        |  \xF4[\x80-\x8F][\x80-\xBF][2]     # plane 16
     )*$%xs', $string);
 }

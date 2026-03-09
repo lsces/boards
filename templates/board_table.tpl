@@ -17,10 +17,10 @@
 		<tr class="{cycle values="even,odd"}{if $board.unreg > 0} unapproved{/if}">
 			{* topic tracking icons *}
 			<td>
-				{if $board.track.on && $board.track.mod}
-					{booticon iname="fa-asterisk" iexplain="New Posts"}
+				{if $board.track.on and $board.track.mod}
+					{booticon iname="icon-asterisk"  ipackage="icons"  ipath="large" iexplain="New Posts" iforce="icon"}
 				{else}
-					{booticon iname="fa-asterisk" iexplain="New Posts"}
+					{booticon iname="icon-asterisk"  ipackage="icons"  ipath="large" iexplain="New Posts" iforce="icon"}
 				{/if} <strong><a href="{$board.url}" title="{$board_title}">{$board_title}</a></strong>
 				<div class="desc">
 					{$board.parsed_data}
@@ -38,7 +38,7 @@
 					<br/> by {if $board.last.user_id < 0}{$board.last.l_anon_name|escape}{else}{displayname user_id=$board.last.user_id}{/if}
 					<br/> <small>{if $board.last.last_modified > 0}{$board.last.last_modified|reltime}{/if}</small>
 				{/if}
-				{if $gBitUser->hasPermission('p_boards_update') || $gBitUser->hasPermission('p_boards_post_update')}
+				{if $gBitUser->hasPermission('p_boards_update') or $gBitUser->hasPermission('p_boards_post_update')}
 					{if $board.unreg > 0}<a class="highlight" href="{$board.url}" title="{$board.title|escape}">{$board.unreg}</a>{/if}
 				{/if}
 			</td>

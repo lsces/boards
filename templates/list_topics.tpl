@@ -16,7 +16,7 @@
 				<a class="item" href="{$smarty.const.BOARDS_PKG_URL}mailing_list.php?b={$board->mInfo.board_id}" title="Message Board Mailing List">{booticon ipackage="icons" iname="icon-envelope" iexplain="Edit Board Mailing List"}</a>
 			{/if}
 			{if $gBitSystem->isPackageActive( 'rss' )}
-				<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?b={$smarty.request.b}">{booticon iname="icon-rss" ipackage=rss iexplain="Get RSS Feed"}</a>
+				<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?b={$smarty.request.b}">{booticon iname="icon-rss"  ipackage="icons" iexplain="Get RSS Feed"}</a>
 			{/if}
 			{if $board->hasUpdatePermission()}
 				<a title="Edit message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?b={$board->mInfo.board_id}">{booticon iname="icon-edit" ipackage="icons" iexplain="Edit Message Board"}</a>

@@ -1,4 +1,6 @@
 <?php
+
+use Bitweaver\KernelTools;
 /**
  * $Header$
  *
@@ -49,5 +51,4 @@ if( !empty( $_REQUEST['get_feed'] ) ) {
 
 $gBitSmarty->assign( 'feedlink', $feedlink );
 
-$gBitSystem->display( 'bitpackage:boards/boards_rss_form.tpl', tra( 'Select Feed' ) , array( 'display_mode' => 'display' ));
-?>
+$gBitSystem->display( 'bitpackage:boards/boards_rss_form.tpl', KernelTools::tra( 'Select Feed' ) , array( 'display_mode' => 'display' ));

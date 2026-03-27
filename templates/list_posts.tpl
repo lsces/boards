@@ -36,7 +36,7 @@
 			</label>
 		{/form}
 		{if $gBitSystem->isPackageActive( 'rss' )}
-			<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?t={$smarty.request.t}">{booticon iname="icon-rss" ipackage=rss iexplain="Get RSS Feed"}</a>
+			<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?t={$smarty.request.t}">{booticon iname="icon-rss"  ipackage="icons"  iexplain="Get RSS Feed"}</a>
 		{/if}
 		{assign var=flip value=$thread->getFlipFlop()}
 		{foreach from=$flip item=flip_s key=flip_name}

@@ -51,7 +51,7 @@ class BitBoard extends LibertyMime {
 				'handler_class' => 'BitBoard',
 				'handler_package' => 'boards',
 				'handler_file' => 'BitBoard.php',
-				'maintainer_url' => 'http://www.bitweaver.org'
+				'maintainer_url' => 'https://www.bitweaver.org'
 		));
 
 		// Permission setup

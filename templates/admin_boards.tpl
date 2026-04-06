@@ -54,7 +54,7 @@
 		<div class="form-group">
 			{forminput}
 		<h2>Board to List Sync</h2>
-		<p>Board to List Sync is the opposite of the above. It allows a bitweaver board to send a message to mailing list. You must complete the "List to Board Sync" configuration above for this feature to work. Please see <a href="http://www.bitweaver.org/wiki/BoardsEmailListConfig">configuration requirements</a> prior to utilizing this feature.</p>
+		<p>Board to List Sync is the opposite of the above. It allows a bitweaver board to send a message to mailing list. You must complete the "List to Board Sync" configuration above for this feature to work. Please see <a href="https://www.bitweaver.org/wiki/BoardsEmailListConfig">configuration requirements</a> prior to utilizing this feature.</p>
 			{/forminput}
 		</div>
 

@@ -15,9 +15,9 @@ $pRegisterHash = [
 define( 'BOARDS_PKG_NAME', $pRegisterHash['package_name'] );
 define( 'BOARDS_PKG_URL', BIT_ROOT_URL . basename( $pRegisterHash['package_path'] ) . '/' );
 define( 'BOARDS_PKG_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['package_path'] ) . '/' );
-define( 'BOARDS_PKG_INCLUDE_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['package_path'] ) . '/includes/'); 
+define( 'BOARDS_PKG_INCLUDE_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['package_path'] ) . '/includes/');
 define( 'BOARDS_PKG_CLASS_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['package_path'] ) . '/includes/classes/');
-define( 'BOARDS_PKG_ADMIN_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['package_path'] ) . '/admin/'); 
+define( 'BOARDS_PKG_ADMIN_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['package_path'] ) . '/admin/');
 $gBitSystem->registerPackage( $pRegisterHash );
 
 if( $gBitSystem->isPackageActive( 'boards' ) && $gBitUser->hasPermission( 'p_boards_read' )) {
@@ -49,7 +49,7 @@ if( $gBitSystem->isPackageActive( 'boards' ) && $gBitUser->hasPermission( 'p_boa
 	$gLibertySystem->registerService( LIBERTY_SERVICE_FORUMS, BOARDS_PKG_NAME, $registerArray );
 
 	function boards_get_topic_comment( $pThreadForwardSequence ) {
-		return intval( substr( $pThreadForwardSequence, 0, 9 ) );
+		return (int) ( substr( $pThreadForwardSequence, 0, 9 ) );
 	}
 
 	$gBitThemes->loadCss(BOARDS_PKG_PATH.'styles/boards.css');
@@ -61,13 +61,13 @@ if( $gBitSystem->isPackageActive( 'boards' ) && $gBitUser->hasPermission( 'p_boa
 	if( file_exists(BIT_ROOT_PATH.'moderation/bit_setup_inc.php') ) {
 		require_once BIT_ROOT_PATH.'moderation/bit_setup_inc.php';
 		global $gModerationSystem;
-		
+
 		if( $gBitSystem->isPackageActive( 'moderation' ) ) {
 
 			// Register our event handler
 			$gModerationSystem->registerModerationObserver(BOARDS_PKG_NAME, 'modcomments', 'board_comments_moderation');
 			$gModerationSystem->registerModerationObserver(BOARDS_PKG_NAME, 'liberty', 'board_comments_moderation');
-	
+
 			// And define the function we use to handle the observation.
 			function board_comments_moderation($pModerationInfo) {
 				if( $pModerationInfo['type'] == 'comment_post' ) {
@@ -92,20 +92,20 @@ if( $gBitSystem->isPackageActive( 'boards' ) && $gBitUser->hasPermission( 'p_boa
 						$code = 'confirm '.$code;
 						require_once KERNEL_PKG_CLASS_PATH.'BitMailer.php';
 						$mailer = new BitMailer();
-	
+
 						if( $pModerationInfo['last_status'] == MODERATION_DELETE ) {
 							// Send a reject message
 							$mailer->sendEmail($code, '', $boardSync,
-											   array( 'sender' =>
-													  BitBoard::getBoardSyncInbox() ) );
+											   [ 'sender' =>
+													  BitBoard::getBoardSyncInbox(), ], );
 						} else {
 							// Send an accept message
 							$mailer->sendEmail($code, '', $boardSync,
-											   array('sender' =>
+											   ['sender' =>
 													 BitBoard::getBoardSyncInbox(),
 													 'x_headers' =>
-													 array( 'Approved' =>
-															$approved) ) );
+													 [ 'Approved' =>
+															$approved, ], ], );
 						}
 					}
 				}

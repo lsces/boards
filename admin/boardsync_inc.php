@@ -5,12 +5,12 @@ function board_sync_run($pLog = false) {
 	$gBitUser->setPermissionOverride('p_users_bypass_captcha', true);
 
 	$connectionString = '{'.$gBitSystem->getConfig('boards_sync_mail_server','imap').':'.$gBitSystem->getConfig('boards_sync_mail_port','993').'/'.$gBitSystem->getConfig('boards_sync_mail_protocol','imap').'/ssl/novalidate-cert}';
-	
+
 	// Can we open the mailbox?
 	if( $mbox = imap_open( $connectionString, $gBitSystem->getConfig( 'boards_sync_user' ), $gBitSystem->getConfig( 'boards_sync_password' ) ) )  {
 
 		$MC = imap_check($mbox);
-		
+
 		// Fetch an overview for all messages in INBOX of mailbox has messages
 		if( $MC->Nmsgs ) {
 			//	  print($MC->Nmsgs);
@@ -20,7 +20,7 @@ function board_sync_run($pLog = false) {
 					if ($pLog) print "Processing Msg#: ".$msgNum."\n";
 					$deleteMsg = false;
 					$header = imap_headerinfo( $mbox, $msgNum );
-					
+
 					// Is this a moderation message?
 					if( preg_match('/.*? post from .*? requires approval/', $header->subject) ) {
 						if ($pLog) print "Is Moderation Request.\n";
@@ -80,7 +80,7 @@ function board_sync_run($pLog = false) {
 				}
 			}
 		}
-		
+
 		// final cleanup
 		imap_expunge( $mbox );
 		imap_close( $mbox );
@@ -91,17 +91,17 @@ function board_sync_run($pLog = false) {
 				bit_error_log( "Failed to clear directory: ".$dir." in boards package mailinglist synchronization." );
 			}
 		}
-		
+
 	} else {
 		bit_error_log( __FILE__." failed imap_open $connectionString ".imap_last_error() );
 	}
-	
+
 }
 
 function board_parse_msg_parts( &$pPartHash, $pMbox, $pMsgId, $pMsgPart, $pPartNum, $pLog ) {
 
-    //fetch part
-    $part=imap_fetchbody( $pMbox, $pMsgId, $pPartNum);
+	//fetch part
+	$part=imap_fetchbody( $pMbox, $pMsgId, $pPartNum);
 	switch( $pMsgPart->encoding ) {
 		case '3': // BASE64
 			$part = base64_decode($part);
@@ -127,8 +127,8 @@ function board_parse_msg_parts( &$pPartHash, $pMbox, $pMsgId, $pMsgPart, $pPartN
 					// Note: alternatively one might run a check to make sure the text is really utf-8, regardless of the header
 					// use strtolower on the attributes since different php installs do not reconcile casing consistantly
 					if( strtolower( $params->attribute ) == 'charset' && strtolower( $params->value ) != 'utf-8' ){
-						if ($pLog) print( "Msg part ".$pPartNum." charset: ".$params->value."\n" ); 
-						$part = @iconv($params->value, 'UTF-8', $part ); 
+						if ($pLog) print( "Msg part ".$pPartNum." charset: ".$params->value."\n" );
+						$part = @iconv($params->value, 'UTF-8', $part );
 					}
 				}
 			}
@@ -140,7 +140,7 @@ function board_parse_msg_parts( &$pPartHash, $pMbox, $pMsgId, $pMsgPart, $pPartN
 			if( !preg_match( '/signature/i', $pMsgPart->subtype ) ) {
 				//get filename of attachment if present
 				$filename='';
-				foreach( array( 'dparameters', 'parameters' ) as $prm ) {
+				foreach( [ 'dparameters', 'parameters' ] as $prm ) {
 					if( empty( $filename ) ) {
 						// if there are any dparameters present in this part
 						if( !empty($pMsgPart->$prm) && count( $pMsgPart->$prm ) > 0 ){
@@ -165,12 +165,12 @@ function board_parse_msg_parts( &$pPartHash, $pMbox, $pMsgId, $pMsgPart, $pPartN
 				}
 			}
 			break;
-   
-    }
-   
-    //if subparts... recurse into function and parse them too!
-    if( !empty( $pMsgPart->parts ) ){
-        foreach ($pMsgPart->parts as $pno=>$parr){
+
+	}
+
+	//if subparts... recurse into function and parse them too!
+	if( !empty( $pMsgPart->parts ) ){
+		foreach ($pMsgPart->parts as $pno=>$parr){
 		board_parse_msg_parts( $pPartHash, $pMbox, $pMsgId, $parr, ( $pPartNum.'.'.( $pno + 1 ) ), $pLog);
 		}
 	}
@@ -181,25 +181,25 @@ function board_sync_get_user( $pFrom ) {
 
 	if( preg_match_all('/[^<\s]+@[^>\s]+/', $pFrom, $matches) ) {
 		foreach( $matches[0] as $email ) {
-			$ret = $gBitUser->getUserInfo( array( 'email'=>$email ) );
+			$ret = $gBitUser->getUserInfo( [ 'email'=>$email ] );
 			if( !empty($ret) ) {
 				return $ret;
 			}
 		}
 	}
 
-	return $gBitUser->getUserInfo( array( 'user_id'=>-1 ) );
+	return $gBitUser->getUserInfo( [ 'user_id'=>-1 ] );
 }
 
 function cache_check_content_prefs( $pName, $pValue, $pLower = false ) {
 	global $gBitDb, $gBitSystem;
 	static $prefs;
 
-	if( empty($prefs[$pLower][$pName]) ) {		
-		$bindVars = array( $pName );
+	if( empty($prefs[$pLower][$pName]) ) {
+		$bindVars = [ $pName ];
 		$prefs[$pLower][$pName] = $gBitDb->getAssoc( "SELECT " .
-						    ($pLower ? 'LOWER(`pref_value`)' : '`pref_value`').
-						    ", `content_id` FROM `".BIT_DB_PREFIX."liberty_content_prefs` WHERE `pref_name`=?", $bindVars );
+							($pLower ? 'LOWER(`pref_value`)' : '`pref_value`').
+							", `content_id` FROM `".BIT_DB_PREFIX."liberty_content_prefs` WHERE `pref_name`=?", $bindVars, );
 	}
 
 	if( !empty($prefs[$pLower][$pName][$pValue]) ) {
@@ -221,7 +221,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 	// @TODO comment or clean up, not sure why this is here -wjames5
 	if( empty($message_id) ) {
 		$message_id = board_sync_get_headerinfo( $pMsgHeader, 'message_id' );
-	}	
+	}
 	$subject = board_sync_get_headerinfo( $pMsgHeader, 'Subject' );
 
 	if( empty( $message_id ) ){
@@ -229,7 +229,6 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 	}else{
 		if ($pLog) print("Processing: ".$message_id."\n");
 		if ($pLog) print("  Subject: ".$subject."\n");
-
 
 		$matches = [];
 		$toAddresses = [];
@@ -243,7 +242,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 				$allRecipients .= (( $allRecipients != "" )?",":"") . $pMsgHeader->ccaddress;
 				if ($pLog) print ("  CC addresses: " . $pMsgHeader->ccaddress . "\n");
 			}
-			
+
 			if ($pLog) print ("  All Recipients: ". $allRecipients ."\n");
 			$allSplit = split( ',', $allRecipients );
 			foreach( $allSplit as $s ) {
@@ -251,21 +250,21 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 				$matches = [];
 				if( strpos( $s, '<' ) !== false ) {
 					if( preg_match( "/\s*(.*)\s*<\s*(.*)\s*>/", $s, $matches ) ) {
-						$toAddresses[] = array( 'name'=>$matches[1], 'email'=>$matches[2] );
+						$toAddresses[] = [ 'name'=>$matches[1], 'email'=>$matches[2] ];
 					} elseif( preg_match('/<\s*(.*)\s*>\s*(.*)\s*/', $s, $matches) ) {
-						$toAddresses[] = array( 'email'=>$matches[1], 'name'=>$matches[2] );
+						$toAddresses[] = [ 'email'=>$matches[1], 'name'=>$matches[2] ];
 					}
 				} elseif( validate_email_syntax( $s ) ) {
-					$toAddresses[] = array( 'email'=>$s );
+					$toAddresses[] = [ 'email'=>$s ];
 				}
 			}
 		} else {
 			foreach ($pDeliveredTo as $address) {
-				$toAddresses[] = array('email' => $address);
+				$toAddresses[] = ['email' => $address];
 			}
 		}
 		if ($pLog) print_r($toAddresses);
-		
+
 		$date = board_sync_get_headerinfo($pMsgHeader, 'Date');
 		$from = board_sync_get_headerinfo($pMsgHeader, 'from');
 		$fromaddress = $from[0]->mailbox."@".$from[0]->host;
@@ -289,11 +288,11 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 				$contentId = null;
 				if( $message_id != null ) {
 					$sql = "SELECT `content_id` FROM `".BIT_DB_PREFIX."liberty_comments` WHERE `message_guid`=? AND `root_id`=?";
-					$contentId = $gBitDb->getOne( $sql, array( $message_id, $boardContentId ) );
+					$contentId = $gBitDb->getOne( $sql, [ $message_id, $boardContentId ] );
 				}
 				if( empty($contentId) ) {
 					if( !empty( $in_reply_to ) ) {
-						if( $parent = $gBitDb->GetRow( "SELECT `content_id`, `root_id` FROM `".BIT_DB_PREFIX."liberty_comments` WHERE `message_guid`=?", array( $in_reply_to ) ) ) {
+						if( $parent = $gBitDb->GetRow( "SELECT `content_id`, `root_id` FROM `".BIT_DB_PREFIX."liberty_comments` WHERE `message_guid`=?", [ $in_reply_to ] ) ) {
 							$replyId = $parent['content_id'];
 							$rootId = $parent['root_id'];
 						} else {
@@ -302,7 +301,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 							$rootId = $boardContentId;
 						}
 						// if no reply to message guid then match on title - this looks dangerous as titles could easily be duplicated -wjames
-					} elseif( $parent = $gBitDb->GetRow( "SELECT lcom.`content_id`, lcom.`root_id` FROM `".BIT_DB_PREFIX."liberty_comments` lcom INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON(lcom.`content_id`=lc.`content_id`) WHERE lc.`title`=?", array( preg_replace( '/re: /i', '', $subject ) ) ) ) {
+					} elseif( $parent = $gBitDb->GetRow( "SELECT lcom.`content_id`, lcom.`root_id` FROM `".BIT_DB_PREFIX."liberty_comments` lcom INNER JOIN `".BIT_DB_PREFIX."liberty_content` lc ON(lcom.`content_id`=lc.`content_id`) WHERE lc.`title`=?", [ preg_replace( '/re: /i', '', $subject ) ] ) ) {
 						$replyId = $parent['content_id'];
 						$rootId = $parent['root_id'];
 						// attach to board as first level comment e.g. new topic
@@ -324,9 +323,9 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					}
 					$storeRow['root_id'] = $rootId;
 					$storeRow['parent_id'] = $replyId;
-					
+
 					$partHash = [];
-					
+
 					switch( $pMsgStructure->type ) {
 					case '0':
 						if ($pLog) print( "Structure Type: text\n" );
@@ -347,7 +346,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					}
 					$plainBody = "";
 					$htmlBody = "";
-					
+
 					foreach( array_keys( $partHash ) as $i ) {
 						if( !empty( $partHash[$i]['plain'] ) ) {
 							$plainBody .= $partHash[$i]['plain'];
@@ -356,15 +355,15 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 							$htmlBody .= $partHash[$i]['html'];
 						}
 						if( !empty( $partHash[$i]['attachment'] ) ) {
-							$storeRow['_files_override'][] = array(
-											       'tmp_name'=> $partHash[$i]['attachment'],
-											       'type'=>$gBitSystem->verifyMimeType( $partHash[$i]['attachment'] ),
-											       'size'=>filesize( $partHash[$i]['attachment'] ),
-											       'name'=>basename( $partHash[$i]['attachment'] ),
-											       'user_id'=>$userInfo['user_id'] );
+							$storeRow['_files_override'][] = [
+												   'tmp_name'=> $partHash[$i]['attachment'],
+												   'type'=>$gBitSystem->verifyMimeType( $partHash[$i]['attachment'] ),
+												   'size'=>filesize( $partHash[$i]['attachment'] ),
+												   'name'=>basename( $partHash[$i]['attachment'] ),
+												   'user_id'=>$userInfo['user_id'], ];
 						}
 					}
-					
+
 					if( !empty( $htmlBody ) ) {
 						$storeRow['edit'] = $htmlBody;
 						$storeRow['format_guid'] = 'bithtml';
@@ -372,33 +371,32 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 						$storeRow['edit'] = nl2br( $plainBody );
 						$storeRow['format_guid'] = 'bithtml';
 					}
-					
+
 					// Nuke all email addresses from the body.
 					if( !empty($storeRow['edit']) ) {
 						$storeRow['edit'] = ereg_replace(
 										 '[-!#$%&\`*+\\./0-9=?A-Z^_`a-z{|}~]+'.'@'.
 										 '(localhost|[-!$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.'.
-										 '[-!$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+)', '', $storeRow['edit'] );
+										 '[-!$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+)', '', $storeRow['edit'], );
 					}
-					
+
 					// We trust the user from this source
 					// and count on moderation to handle links
 					global $gBitUser;
 					$gBitUser->setPermissionOverride('p_liberty_trusted_editor', true);
 
-					
-					// Check to add attachments 
-					
+					// Check to add attachments
+
 					// NOTE: we temporarily change the gBitUser here!
 					// This is so we can run a proper content permissions check
 					// for attachment permission against the parent
-					// board object. This is sort of a hack to deal 
+					// board object. This is sort of a hack to deal
 					// with the fact that LibertyContent does not have a
 					// means to check the permissions of any user except gBitUser -wjames5
-					
+
 					// Important store a reference so we can switch back when we are done
 					$gBitUserOrg = $gBitUser;
-					
+
 					// Load the message sending user
 					if( $userInfo['user_id'] != ANONYMOUS_USER_ID ) {
 						$userClass = $gBitSystem->getConfig( 'user_class', 'BitPermUser' );
@@ -409,25 +407,25 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 						// flip gBitUser to our message sender
 						$gBitUser = $newBitUser;
 					}
-				
+
 					// Load the parent board
 					$board = new BitBoard( null, $boardContentId );
 					$board->load();
-				
+
 					// Check the permission for the user on the board
-					if( $gBitSystem->isFeatureActive( 'comments_allow_attachments' ) && $board->hasUserPermission( 'p_liberty_attach_attachments' ) ){ 
+					if( $gBitSystem->isFeatureActive( 'comments_allow_attachments' ) && $board->hasUserPermission( 'p_liberty_attach_attachments' ) ){
 						// note we grant the permission to the anonymous user which will become gBitUser once again
 						$gBitUserOrg->setPermissionOverride('p_liberty_attach_attachments', true);
 					};
-				
+
 					// Clear the reference to this board so we dont mistakenly use it later
 					unset( $board );
-				
+
 					// Important: switch gBitUser back!
 					$gBitUser = $gBitUserOrg;
-				
+
 					// End check to add attachments to comments to the parent board
-				
+
 					// Check for an empty body
 					// Duplicate subject if we have it
 					if (empty($storeRow['edit'])) {
@@ -438,14 +436,13 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 							$storeRow['edit'] = ".";
 						}
 					}
-				
-				
+
 					$storeComment = new LibertyComment( null );
 					$gBitDb->StartTrans();
 					if( $storeComment->storeComment($storeRow) ) {
 						// undo the attachment permission
 						$gBitUser->setPermissionOverride('p_liberty_attach_attachments', false);
-					
+
 						// set moderation approval
 						if( !$pModerate && $gBitSystem->isPackageActive('moderation') && $gBitSystem->isPackageActive('modcomments') ) {
 							global $gModerationSystem, $gBitUser;
@@ -457,37 +454,35 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 								$gBitUser->setPermissionOverride('p_admin', false);
 							}
 						}
-					
+
 						if( !empty( $storeRow['message_guid'] ) ){
 							// map the message guid to the comment
-							$storeComment->mDb->query( "UPDATE `".BIT_DB_PREFIX."liberty_comments` SET `message_guid`=? WHERE `content_id`=?", array( $storeRow['message_guid'], $storeComment->mContentId ) );
-							
+							$storeComment->mDb->query( "UPDATE `".BIT_DB_PREFIX."liberty_comments` SET `message_guid`=? WHERE `content_id`=?", [ $storeRow['message_guid'], $storeComment->mContentId ] );
+
 							// Store the confirm code
 							if( $pModerate ) {
 								$storeComment->storePreference('board_confirm_code', $pModerate);
 							}
-						
+
 							// done
 							$gBitDb->CompleteTrans();
 							return true;
-						}else{
+						}
 							bit_error_log( "Email sync error: Message Id not set. You shouldn't have even gotten this far." );
 							$gBitDb->RollbackTrans();
 							return false;
-						}
-					} else {
+
+					}
 						if( count( $storeComment->mErrors ) == 1 && !empty( $storeComment->mErrors['store'] ) && $storeComment->mErrors['store'] == 'Duplicate comment.' ) {
 							return true;
-						} else {
+						}
 							foreach( $storeComment->mErrors as $error ){
 								bit_error_log( $error );
 							}
 							$gBitDb->RollbackTrans();
 							return false;
-						}
-					}
 
-				} else {
+				}
 					if ($pLog) print "Message Exists: $contentId : $boardContentId : $message_id : $pModerate\n";
 					// If this isn't a moderation message
 					if( $pModerate === false ) {
@@ -520,10 +515,10 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 						$storeComment->storePreference('board_confirm_code', $pModerate);
 					}
 					return true;
-				}
-			} else {
-				if ($pLog) print "No Board match found for $to[email]\n";
+
 			}
+				if ($pLog) print "No Board match found for $to[email]\n";
+
 		}
 	}
 	return false;
@@ -554,8 +549,8 @@ function board_sync_get_headerinfo( $header, $key ){
 
 function board_sync_delivered_to( $raw_headers ) {
 	$ret = null;
-	if (isset($raw_headers) && 
-	    preg_match_all("/Delivered-To:\s*(.*)\s*/", $raw_headers, $deliveredTo) > 0) {
+	if (isset($raw_headers) &&
+		preg_match_all("/Delivered-To:\s*(.*)\s*/", $raw_headers, $deliveredTo) > 0) {
 		$ret = [];
 		foreach ($deliveredTo[1] as $address) {
 			// Make sure the Delivered-To: address is valid.
@@ -568,8 +563,8 @@ function board_sync_delivered_to( $raw_headers ) {
 }
 
 function is_utf8($string) {
-    // From http://w3.org/International/questions/qa-forms-utf-8.html
-    return preg_match('%^(?:
+	// From http://w3.org/International/questions/qa-forms-utf-8.html
+	return preg_match('%^(?:
           [\x09\x0A\x0D\x20-\x7E]            # ASCII
         | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
         |  \xE0[\xA0-\xBF][\x80-\xBF]        # excluding overlongs

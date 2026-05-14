@@ -72,7 +72,6 @@ $gBitSmarty->assign( 'board', $gBoard );
 $gContent = &$gBoard;
 $gBitSmarty->assign('gContent', $gContent);
 
-
 // if you know what this is please comment it
 if (empty($thread->mInfo['th_root_id'])) {
 	if ($_REQUEST['action']==3) {
@@ -83,16 +82,14 @@ if (empty($thread->mInfo['th_root_id'])) {
 	}
 }
 
-
 // Invoke services
-$displayHash = array( 'perm_name' => 'p_boards_read' );
+$displayHash = [ 'perm_name' => 'p_boards_read' ];
 $thread->invokeServices( 'content_display_function', $displayHash );
 
 $thread->readTopic();
 
 $gBitSmarty->assign( 'thread', $thread );
 $gBitSmarty->assign( 'topic_locked', BitBoardTopic::isThreadLocked( $thread->mCommentContentId ) );
-
 
 // Get the thread of comments
 $commentsParentId=$thread->mInfo['content_id'];
@@ -114,7 +111,6 @@ if( $gBitUser->isRegistered() ) {
 	$postComment['user_url'] = $gBitUser->getDisplayUrl();
 }
 
-
 // display warnings - might be for edit processes - if you know please comment
 $warnings = [];
 if (!empty($_REQUEST['warning'])) {
@@ -126,8 +122,7 @@ if (!empty($_REQUEST['warning'])) {
 }
 $gBitSmarty->assign('warnings',$warnings);
 
-
 // ajax support
 $gBitThemes->loadAjax( 'mochikit' );
 
-$gBitSystem->display('bitpackage:boards/list_posts.tpl', "Show Thread: " . $thread->getField('title') , array( 'display_mode' => 'display' ));
+$gBitSystem->display('bitpackage:boards/list_posts.tpl', "Show Thread: " . $thread->getField('title') , [ 'display_mode' => 'display' ]);

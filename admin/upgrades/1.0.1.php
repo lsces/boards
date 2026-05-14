@@ -4,36 +4,36 @@
  */
 global $gBitInstaller;
 
-$infoHash = array(
+$infoHash = [
 	'package'      => BOARDS_PKG_NAME,
 	'version'      => str_replace( '.php', '', basename( __FILE__ )),
 	'description'  => "Add boards sections and positioning.",
 	'post_upgrade' => null,
-);
-$gBitInstaller->registerPackageUpgrade( $infoHash, array(
+];
+$gBitInstaller->registerPackageUpgrade( $infoHash, [
 
-array( 'DATADICT' => array(
-	array( 'CREATE' => array(
+[ 'DATADICT' => [
+	[ 'CREATE' => [
 		'boards_sections' => "
 			section_id I4 PRIMARY,
 			section_title C(255)
-		",	
-	)),
+		",
+	]],
 	// insert new column
-	array( 'ALTER' => array(
-		'boards' => array(
-			'section_id' => array( '`section_id`', 'I4' ),
-			'pos' => array( '`pos`', 'I4' ),
-	))),
-	array( 'CREATEINDEX' => array(
-		'boards_sections_idx'       => array( 'boards', 'section_id', [] ),
-	)),
-	array( 'CREATESEQUENCE' => array(
+	[ 'ALTER' => [
+		'boards' => [
+			'section_id' => [ '`section_id`', 'I4' ],
+			'pos' => [ '`pos`', 'I4' ],
+	], ]],
+	[ 'CREATEINDEX' => [
+		'boards_sections_idx'       => [ 'boards', 'section_id', [] ],
+	]],
+	[ 'CREATESEQUENCE' => [
 		'boards_sections_id_seq',
-	)),
-)),
+	]],
+]],
 
-array( 'PHP' => '
+[ 'PHP' => '
 // Is package installed and enabled
 global $gBitSystem;
 
@@ -88,8 +88,7 @@ while( $topic = $map_errors->fetchRow() ) {
 }
 
 $oTopic->CompleteTrans();
-' ),
+' ],
 
-
-));
+]);
 ?>

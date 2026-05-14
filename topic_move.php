@@ -48,5 +48,5 @@ $gBitSmarty->assign('boards', $boards);
 
 $gBitSmarty->assign('fromBoardId', $board->mContentId);
 
-$gBitSystem->display( 'bitpackage:boards/topic_move.tpl', tra('Move Topic').':'.$gContent->getTitle(), array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:boards/topic_move.tpl', tra('Move Topic').':'.$gContent->getTitle(), [ 'display_mode' => 'display' ]);
 ?>

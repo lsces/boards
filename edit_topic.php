@@ -39,7 +39,7 @@ $rslt = false;
 if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 	// Check permissions to edit this topic
 	$board->verifyUpdatePermission();
-	
+
 	if ( isset($_REQUEST['is_locked']) && is_numeric($_REQUEST['is_locked']) ){
 		$rslt = $gContent->lock($_REQUEST['is_locked']);
 	} elseif ( isset($_REQUEST['is_sticky']) && is_numeric($_REQUEST['is_sticky']) ){
@@ -51,17 +51,17 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 	if( !(( $gContent->mInfo['root_id'] == $gContent->mInfo['board_content_id'] && $board->hasAdminPermission() ) || $gBitUser->hasPermission('p_liberty_admin_comments')) ){
 		$gBitSystem->fatalError( tra('You do not have permission to delete this topic.') );
 	}
-	
+
 	if( !empty( $_REQUEST['cancel'] ) ) {
 		// user cancelled - just continue on, doing nothing
 	} elseif( empty( $_REQUEST['confirm'] ) ) {
 		$formHash['remove'] = true;
 		$formHash['t'] = $_REQUEST['t'];
-		$gBitSystem->confirmDialog( $formHash, 
-			array( 
+		$gBitSystem->confirmDialog( $formHash,
+			[
 				'warning' => tra( 'Are you sure you want to delete this topic?' ) . ' ' . $gContent->getTitle(),
-				'error' => tra('This cannot be undone!')
-			)
+				'error' => tra('This cannot be undone!'),
+			],
 		);
 	} else {
 		// @TODO Topic should extend LibertyComment - but until that day we load it up a second time
@@ -69,7 +69,7 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 		if( !$topicAsComment->expunge() ) {
 			$gBitSmarty->assign( 'errors', $topicAsComment->mErrors );
 		}
-		// send us back to the baord - http_referer won't work with confirm process 
+		// send us back to the baord - http_referer won't work with confirm process
 		bit_redirect( BOARDS_PKG_URL.'index.php?b='. $gContent->mInfo['board_id'] );
 	}
 // User pref options on a topic - not really editing but this simplifies topic related processes putting it here
@@ -87,9 +87,8 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 if($rslt){
 	// Return us to where we came from
 	header ("location: ".$_SERVER['HTTP_REFERER']);
-}else{
+}
 	// @TODO put error into an alert
 	//trigger_error(var_export($gContent->mErrors,true ));
-}
 
 ?>

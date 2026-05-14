@@ -10,7 +10,9 @@
 //	$gBitSmarty->assign('home_bitboard', $_REQUEST["homeBitBoards"]);
 //}
 
-namespace Bitweaver\Boards;;
+namespace Bitweaver\Boards;
+
+;
 
 $formBitBoardsLists = [
 	'boards_thread_track'          => [
@@ -74,7 +76,7 @@ if( $processForm ) {
 	foreach( $formBoardsEmailText as $text ) {
 		$gBitSystem->storeConfig( $text, !empty( $_REQUEST[$text] ) ? trim( $_REQUEST[$text] ) : null, BOARDS_PKG_NAME );
 	}
-	
+
 }
 
 $board = new BitBoard();

@@ -24,11 +24,11 @@ if( !$gBitUser->isAdmin() ){
 if( !empty( $_REQUEST['update'] ) ) {
 	// get all mailman lists
 	$query = "SELECT pref_value AS listname FROM `".BIT_DB_PREFIX."liberty_content_prefs` lcp WHERE lcp.`pref_name` = ?";
-	$lists =  $gBitSystem->mDb->getArray( $query, array('boards_mailing_list') ); 
+	$lists =  $gBitSystem->mDb->getArray( $query, ['boards_mailing_list'] );
 
 	foreach( $lists as $list ){
 		// update list configuration
-		if( $error = mailman_config_list( array( 'listname' => $list['listname'] ) ) ) {
+		if( $error = mailman_config_list( [ 'listname' => $list['listname'] ] ) ) {
 			echo $error."<br />";
 		}else{
 			echo "List: ".$list['listname']." has been updated.<br />";

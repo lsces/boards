@@ -15,6 +15,7 @@
  * required setup
  */
 namespace Bitweaver\Boards;
+
 use Bitweaver\BitBase;
 use Bitweaver\KernelTools;
 use Bitweaver\Liberty\LibertyBase;
@@ -72,7 +73,7 @@ class BitBoardTopic extends LibertyMime {
 			$bindVars = [];
 			$selectSql = $joinSql = $whereSql = '';
 			array_push( $bindVars, $lookupId = BitBase::verifyId( $this->mRootId ) ? $this->mRootId : $this->mContentId );
-			$paramHash = array( array( 'include_comments' => true ) );
+			$paramHash = [ [ 'include_comments' => true ] ];
 			$this->getServicesSql( 'content_load_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, $this, $paramHash );
 
 			if (!($gBitUser->hasPermission('p_boards_update') || $gBitUser->hasPermission('p_boards_posts_update'))) {
@@ -148,7 +149,7 @@ class BitBoardTopic extends LibertyMime {
 		global $gBitDb;
 		$ret = null;
 		if( BitBase::verifyId( $pMigratePostId ) ) {
-			$path = $gBitDb->getOne( "SELECT lcom.`thread_forward_sequence`  FROM `".BIT_DB_PREFIX."boards_posts` bp INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON(bp.`comment_id`=lcom.`comment_id`) WHERE bp.`migrate_post_id`=?", array( $pMigratePostId ) );
+			$path = $gBitDb->getOne( "SELECT lcom.`thread_forward_sequence`  FROM `".BIT_DB_PREFIX."boards_posts` bp INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON(bp.`comment_id`=lcom.`comment_id`) WHERE bp.`migrate_post_id`=?", [ $pMigratePostId ] );
 			if( $path ) {
 				$ret = boards_get_topic_comment( $path  );
 			}
@@ -160,7 +161,7 @@ class BitBoardTopic extends LibertyMime {
 		global $gBitDb;
 		$ret = null;
 		if( BitBase::verifyId( $pMigrateTopicId ) ) {
-			$ret = $gBitDb->getOne( "SELECT lcom.`comment_id`  FROM `".BIT_DB_PREFIX."boards_topics` bt INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON(bt.`parent_id`=lcom.`content_id`) WHERE `migrate_topic_id`=?", array( $pMigrateTopicId ) );
+			$ret = $gBitDb->getOne( "SELECT lcom.`comment_id`  FROM `".BIT_DB_PREFIX."boards_topics` bt INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON(bt.`parent_id`=lcom.`content_id`) WHERE `migrate_topic_id`=?", [ $pMigrateTopicId ] );
 		}
 		return $ret;
 	}
@@ -203,9 +204,9 @@ class BitBoardTopic extends LibertyMime {
 		if( $this->mCommentContentId && $this->verify( $pParamHash ) ) {
 			//$pParamHash = (($pParamHash + 1)%2);
 			$query_sel = "SELECT * FROM `".BIT_DB_PREFIX."boards_topics` WHERE `parent_id` = ?";
-			$isStored = $this->mDb->getOne( $query_sel, array( $this->mCommentContentId ) );
+			$isStored = $this->mDb->getOne( $query_sel, [ $this->mCommentContentId ] );
 			if( $isStored ) {
-				$result = $this->mDb->associateUpdate( 'boards_topics', $pParamHash['topic_store'], array( 'parent_id' => $this->mCommentContentId ) );
+				$result = $this->mDb->associateUpdate( 'boards_topics', $pParamHash['topic_store'], [ 'parent_id' => $this->mCommentContentId ] );
 			} else {
 				$pParamHash['topic_store']['parent_id'] = $this->mCommentContentId;
 				$result = $this->mDb->associateInsert( 'boards_topics', $pParamHash['topic_store'] );
@@ -226,13 +227,13 @@ class BitBoardTopic extends LibertyMime {
 		} else {
 			$state = (($state+1)%2);
 			$query_sel = "SELECT * FROM `".BIT_DB_PREFIX."boards_topics` WHERE `parent_id` = ?";
-			$result = $this->mDb->query( $query_sel, array( $this->mCommentContentId ) );
+			$result = $this->mDb->query( $query_sel, [ $this->mCommentContentId ] );
 			if($result->RowCount()==0) {
 				$query_ins = "INSERT INTO `".BIT_DB_PREFIX."boards_topics` (`parent_id`,`is_locked`) VALUES ( ?, ?)";
-				$result = $this->mDb->query( $query_ins, array( $this->mCommentContentId, $state ) );
+				$result = $this->mDb->query( $query_ins, [ $this->mCommentContentId, $state ] );
 			} else {
 				$query_up = "UPDATE `".BIT_DB_PREFIX."boards_topics` SET `is_locked` = ? WHERE `parent_id` = ?";
-				$result = $this->mDb->query( $query_up, array( $state, $this->mCommentContentId ) );
+				$result = $this->mDb->query( $query_up, [ $state, $this->mCommentContentId ] );
 			}
 			$ret = true;
 		}
@@ -250,13 +251,13 @@ class BitBoardTopic extends LibertyMime {
 		} else {
 			$state = (($state+1)%2);
 			$query_sel = "SELECT * FROM `".BIT_DB_PREFIX."boards_topics` WHERE `parent_id` = ?";
-			$result = $this->mDb->query( $query_sel, array( $this->mCommentContentId ) );
+			$result = $this->mDb->query( $query_sel, [ $this->mCommentContentId ] );
 			if($result->RowCount()==0) {
 				$query_ins = "INSERT INTO `".BIT_DB_PREFIX."boards_topics` (`parent_id`,`is_sticky`) VALUES ( ?, ? )";
-				$result = $this->mDb->query( $query_ins, array( $this->mCommentContentId, $state ) );
+				$result = $this->mDb->query( $query_ins, [ $this->mCommentContentId, $state ] );
 			} else {
 				$query_up = "UPDATE `".BIT_DB_PREFIX."boards_topics` SET `is_sticky` = ? WHERE `parent_id` = ?";
-				$result = $this->mDb->query( $query_up, array( $state, $this->mCommentContentId) );
+				$result = $this->mDb->query( $query_up, [ $state, $this->mCommentContentId] );
 			}
 			$ret = true;
 		}
@@ -290,11 +291,11 @@ class BitBoardTopic extends LibertyMime {
 		// move the comment we want to move to the target board
 		$query = "UPDATE `".BIT_DB_PREFIX."liberty_comments` SET `root_id` = ?, `parent_id` = ?
 				  WHERE `thread_forward_sequence` LIKE '".sprintf("%09d.", $this->mRootId)."%' AND `root_id`=`parent_id`";
-		$result = $this->mDb->query( $query, array( $board_id, $board_id ) );
+		$result = $this->mDb->query( $query, [ $board_id, $board_id ] );
 
 		$query = "UPDATE `".BIT_DB_PREFIX."liberty_comments` SET `root_id` = ?
 				  WHERE `thread_forward_sequence` LIKE '".sprintf("%09d.", $this->mRootId)."%'";
-		$result = $this->mDb->query( $query, array( $board_id ) );
+		$result = $this->mDb->query( $query, [ $board_id ] );
 
 		// end transaction
 		$this->CompleteTrans();
@@ -332,7 +333,7 @@ class BitBoardTopic extends LibertyMime {
 
 		// if we have the board's board_id (b) we use that, or if we have its content_id we can use that
 		if( (!empty( $pParamHash['b'] ) && $this->verifyId( $pParamHash['b'] ))
-		    || (!empty( $pParamHash['content_id'] ) && $this->verifyId( $pParamHash['content_id'] )) ) {
+			|| (!empty( $pParamHash['content_id'] ) && $this->verifyId( $pParamHash['content_id'] )) ) {
 			$joinSql .= " INNER JOIN `{$BIT_DB_PREFIX}boards_map` map ON (map.`topic_content_id` = lcom.`root_id`)";
 			$joinSql .= " INNER JOIN `{$BIT_DB_PREFIX}boards` b ON (b.`content_id` = map.`board_content_id`)";
 			if(!empty($pParamHash['b'])) {
@@ -508,7 +509,7 @@ class BitBoardTopic extends LibertyMime {
 			$pThreadId=intval($pThreadId);
 		}
 */
-		$ret = $gBitSystem->mDb->getOne("SELECT `is_locked` FROM `".BIT_DB_PREFIX."boards_topics` WHERE `parent_id` = ?", array( (int)$pThreadId ) );
+		$ret = $gBitSystem->mDb->getOne("SELECT `is_locked` FROM `".BIT_DB_PREFIX."boards_topics` WHERE `parent_id` = ?", [ (int)$pThreadId ] );
 		return !empty($ret);
 	}
 
@@ -565,7 +566,7 @@ class BitBoardTopic extends LibertyMime {
 				$res['user'] =( $res['real_name'] ?? $res['login'] );
 				$ret['users'][$res['login']] = $res;
 			}
-			$ret['topic'] = new BitBoardTopic(\intval($topicId));
+			$ret['topic'] = new BitBoardTopic((int) $topicId);
 			$ret['topic']->load();
 			return $ret;
 		}
@@ -593,14 +594,14 @@ class BitBoardTopic extends LibertyMime {
 
 		@mail($user['email'], $mail_subject , $mail_message, "From: ".$gBitSystem->getConfig( 'site_sender_email' )."\r\nContent-type: text/plain;charset=utf-8\r\n");
 
-		$data = array(
+		$data = [
 			'notify_date'=>time(),
-		);
+		];
 
-		$key = array(
+		$key = [
 			'user_id' =>$user['user_id'],
 			'topic_id' =>sprintf("%09d.",$this->mRootId),
-		);
+		];
 
 		$this->mDb->associateUpdate(BIT_DB_PREFIX."boards_tracking",$data,$key);
 	}
@@ -662,21 +663,21 @@ class BitBoardTopic extends LibertyMime {
 		if ($gBitSystem->isFeatureActive('boards_thread_track') && $gBitUser->isRegistered()) {
 			$topicId = sprintf("%09d.",$this->mRootId);
 			$BIT_DB_PREFIX = BIT_DB_PREFIX;
-			$c = $this->mDb->getOne("SELECT COUNT(*) FROM `".BIT_DB_PREFIX."boards_tracking` WHERE user_id=? AND topic_id='$topicId'",array($gBitUser->mUserId));
+			$c = $this->mDb->getOne("SELECT COUNT(*) FROM `".BIT_DB_PREFIX."boards_tracking` WHERE user_id=? AND topic_id='$topicId'",[$gBitUser->mUserId]);
 
-			$data = array(
+			$data = [
 			'user_id' =>$gBitUser->mUserId,
 			'topic_id' =>$topicId,
 			'track_date'=>time(),
-			);
+			];
 
 			if ($c == 0) {
 				$this->mDb->associateInsert(BIT_DB_PREFIX."boards_tracking",$data);
 			} else {
-				$key = array(
+				$key = [
 				'user_id' =>$gBitUser->mUserId,
 				'topic_id' =>$topicId,
-				);
+				];
 				$this->mDb->associateUpdate(BIT_DB_PREFIX."boards_tracking",$data,$key);
 			}
 			$this->mInfo['track']['mod']=false;
@@ -713,19 +714,19 @@ class BitBoardTopic extends LibertyMime {
 			} else {
 				$pState = (($pState+1)%2);
 				$query_sel = "SELECT * FROM `".BIT_DB_PREFIX."boards_tracking` WHERE user_id=$gBitUser->mUserId AND topic_id='$topicId'";
-				$data = array(
+				$data = [
 				'user_id' =>$gBitUser->mUserId,
 				'topic_id' =>$topicId,
 				'notify'=>$pState,
-				);
+				];
 				$c = $this->mDb->getOne( $query_sel );
 				if ($c == 0) {
 					$this->mDb->associateInsert(BIT_DB_PREFIX."boards_tracking",$data);
 				} else {
-					$key = array(
+					$key = [
 					'user_id' =>$gBitUser->mUserId,
 					'topic_id' =>$topicId,
-					);
+					];
 					$this->mDb->associateUpdate(BIT_DB_PREFIX."boards_tracking",$data,$key);
 				}
 				$ret = true;
@@ -767,12 +768,12 @@ class BitBoardTopic extends LibertyMime {
 		unset($res['track_notify']);
 	}
 
-    function getRootObj(){
-        if ( !is_object( $this->mRootObj ) && !empty( $this->mInfo['root_id'] ) ){
-            if ( $obj = LibertyBase::getLibertyObject( $this->mInfo['root_id'] ) ) {
-                $this->mRootObj = $obj;
-            }
-        }
-        return $this->mRootObj;
-    }
+	function getRootObj(){
+		if ( !is_object( $this->mRootObj ) && !empty( $this->mInfo['root_id'] ) ){
+			if ( $obj = LibertyBase::getLibertyObject( $this->mInfo['root_id'] ) ) {
+				$this->mRootObj = $obj;
+			}
+		}
+		return $this->mRootObj;
+	}
 }

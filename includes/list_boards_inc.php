@@ -33,7 +33,7 @@ if($gBitSystem->isPackageActive('pigeonholes')) {
 	$p = new Pigeonholes();
 	$s = new LibertyStructure();
 
-	$listHash = array('load_only_root'=> true);
+	$listHash = ['load_only_root'=> true];
 	$l = $p->getList($listHash);
 	foreach ($l as $e) {
 		$d = $s->getSubTree( $e['structure_id'] );
@@ -65,7 +65,7 @@ if($gBitSystem->isPackageActive('pigeonholes')) {
 					$board_cids[] = $boardKey['content_id'];
 				}
 				if (count($board_cids)>0) {
-					$listHash = array('boards'=>$board_cids,'paginationOff'=>'y');
+					$listHash = ['boards'=>$board_cids,'paginationOff'=>'y'];
 					$board = new BitBoard();
 					$pos_var['members'] = $board->getList($listHash);
 					$pos_var['pagination']=$listHash['listInfo'];
@@ -82,11 +82,11 @@ if($gBitSystem->isPackageActive('pigeonholes')) {
 $ret =[];
 if($gBitSystem->isPackageActive('pigeonholes')) {
 //	$ret['data']['title']="Uncategorised Boards";
-} else {
-//	$ret['data']['title']="Board List";
 }
+//	$ret['data']['title']="Board List";
+
 $ret['children']=[];
-$listHash = array('nboards'=>$board_all_cids,'paginationOff'=>'y');
+$listHash = ['nboards'=>$board_all_cids,'paginationOff'=>'y'];
 $board = new BitBoard();
 $ret['members'] = $board->getList($listHash);
 if (count($ret['members']) == 1) {
@@ -126,6 +126,6 @@ foreach ($ns as $k=> $a) {
 }
 
 //$gBitSmarty->display( 'bitpackage:boards/cat_display.tpl');
-$gBitSystem->display( 'bitpackage:boards/list_boards.tpl', tra( 'Boards' ) , array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:boards/list_boards.tpl', tra( 'Boards' ) , [ 'display_mode' => 'display' ]);
 
 ?>

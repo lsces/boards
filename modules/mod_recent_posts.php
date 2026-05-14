@@ -21,7 +21,7 @@ if( !empty( $moduleParams ) ) {
 	extract( $moduleParams );
 }
 
-$listHash = array( 'user_id' => $gQueryUserId, 'sort_mode' => 'created_desc' );
+$listHash = [ 'user_id' => $gQueryUserId, 'sort_mode' => 'created_desc' ];
 
 if( !empty( $moduleParams['module_rows'] ) ) {
 	$listHash['max_records'] = $moduleParams['module_rows'];

@@ -1,5 +1,5 @@
 <?php
-$tables = [ 
+$tables = [
 	'boards_posts' => "
 		comment_id I4 PRIMARY,
 		is_approved I1 NOTNULL DEFAULT(0),
@@ -19,7 +19,7 @@ $tables = [
 	'boards_sections' => "
 		section_id I4 PRIMARY,
 		section_title C(255)
-	",	
+	",
 	'boards' => "
 		board_id I4 PRIMARY,
 		content_id I4 NOTNULL,
@@ -41,7 +41,7 @@ $tables = [
 		track_date I4 NOTNULL DEFAULT(0),
 		notify I1 NOTNULL DEFAULT(0),
 		notify_date I4 NOTNULL DEFAULT(0)
-	"
+	",
 ];
 
 global $gBitInstaller;
@@ -79,21 +79,21 @@ $gBitInstaller->registerUserPermissions( BOARDS_PKG_NAME, [
 ] );
 
 // ### Default Preferences
-$gBitInstaller->registerPreferences( BOARDS_PKG_NAME, [ 
+$gBitInstaller->registerPreferences( BOARDS_PKG_NAME, [
 	[  BOARDS_PKG_NAME, 'boards_thread_track', 'y' ],
 ] );
 if(defined('RSS_PKG_NAME')) {
-	$gBitInstaller->registerPreferences( BOARDS_PKG_NAME, [ 
+	$gBitInstaller->registerPreferences( BOARDS_PKG_NAME, [
 		[  RSS_PKG_NAME, BOARDS_PKG_NAME.'_rss', 'y'],
 	] );
 }
 
 // ### Register content types
-$gBitInstaller->registerContentObjects( BOARDS_PKG_NAME, [  
+$gBitInstaller->registerContentObjects( BOARDS_PKG_NAME, [
 	'BitBoard'=>BOARDS_PKG_CLASS_PATH.'BitBoard.php',
 ] );
 
 // Requirements
-$gBitInstaller->registerRequirements( BOARDS_PKG_NAME, [ 
+$gBitInstaller->registerRequirements( BOARDS_PKG_NAME, [
 	'liberty' => [ 'min' => '5.0.0' ],
 ] );

@@ -29,11 +29,11 @@ if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQU
 		foreach( $_REQUEST["checked"] as $del ) {
 			$formHash['input'][] = '<input type="hidden" name="checked[]" value="'.$del.'"/>';
 		}
-		$gBitSystem->confirmDialog( $formHash, 
-			array( 
-				'warning' => tra('Are you sure you want to delete these topics?') . ' (' . tra('Count: ') . count( $_REQUEST["checked"] ) . ')',				
+		$gBitSystem->confirmDialog( $formHash,
+			[
+				'warning' => tra('Are you sure you want to delete these topics?') . ' (' . tra('Count: ') . count( $_REQUEST["checked"] ) . ')',
 				'error' => tra('This cannot be undone!'),
-			)
+			],
 		);
 	} else {
 		foreach( $_REQUEST["checked"] as $deleteId ) {

@@ -22,44 +22,44 @@ $gBitSystem->verifyPackage( 'boards' );
 $gBitSystem->verifyPermission( 'p_boards_read' );
 
 function ajax_nice_error($errno, $errstr, $errfile, $errline) {
-	$errortype = array (
-	E_ERROR => array(
+	$errortype =  [
+	E_ERROR => [
 	'desc'=>"Error",
-	'ignore'=>false),
-	E_WARNING => array(
+	'ignore'=>false, ],
+	E_WARNING => [
 	'desc'=> "Warning",
-	'ignore'=>false),
-	E_PARSE => array(
+	'ignore'=>false, ],
+	E_PARSE => [
 	'desc'=> "Parsing Error",
-	'ignore'=>false),
-	E_NOTICE => array(
+	'ignore'=>false, ],
+	E_NOTICE => [
 	'desc'=> "Notice",
-	'ignore'=>true),
-	E_CORE_ERROR => array(
+	'ignore'=>true, ],
+	E_CORE_ERROR => [
 	'desc'=> "Core Error",
-	'ignore'=>false),
-	E_CORE_WARNING => array(
+	'ignore'=>false, ],
+	E_CORE_WARNING => [
 	'desc'=> "Core Warning",
-	'ignore'=>false),
-	E_COMPILE_ERROR => array(
+	'ignore'=>false, ],
+	E_COMPILE_ERROR => [
 	'desc'=> "Compile Error",
-	'ignore'=>false),
-	E_COMPILE_WARNING => array(
+	'ignore'=>false, ],
+	E_COMPILE_WARNING => [
 	'desc'=> "Compile Warning",
-	'ignore'=>false),
-	E_USER_ERROR => array(
+	'ignore'=>false, ],
+	E_USER_ERROR => [
 	'desc'=> "User Error",
-	'ignore'=>false),
-	E_USER_WARNING => array(
+	'ignore'=>false, ],
+	E_USER_WARNING => [
 	'desc'=> "User Warning",
-	'ignore'=>false),
-	E_USER_NOTICE => array(
+	'ignore'=>false, ],
+	E_USER_NOTICE => [
 	'desc'=> "User Notice",
-	'ignore'=>false),
-	E_STRICT => array(
+	'ignore'=>false, ],
+	E_STRICT => [
 	'desc'=> "Runtime Notice",
-	'ignore'=>true),
-	);
+	'ignore'=>true, ],
+	];
 	// set of errors for which a var trace will be saved
 
 	if(!$errortype[$errno]['ignore']) {

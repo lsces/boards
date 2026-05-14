@@ -42,7 +42,6 @@ if (!empty($content_type) && !empty($content_data)) {
 }
 $gBitSmarty->assign( 'signatureContent', $signatureContent );
 
-
 if( isset( $_REQUEST["format_guid"] ) ) {
 	$signatureContent->mInfo['format_guid'] = $_REQUEST["format_guid"];
 }

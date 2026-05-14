@@ -58,7 +58,6 @@ function migrate_phpbb() {
 		die;
 	}
 
-
 $gBitDb->StartTrans();
 	if( $forumList = $gBitDb->getAssoc( "SELECT `forum_id`,`forum_name`, `forum_desc`,`content_id` FROM " . FORUMS_TABLE . " bbf LEFT JOIN `".BIT_DB_PREFIX."liberty_content` lc ON (lc.`content_type_guid`='bitboard' AND bbf.`forum_name`=lc.`title`) ORDER BY bbf.forum_id" ) ) {
 vd( $forumList ); flush();

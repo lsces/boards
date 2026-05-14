@@ -15,6 +15,7 @@
  * required setup
  */
 namespace Bitweaver\Boards;
+
 use Bitweaver\BitBase;
 use Bitweaver\KernelTools;
 use Bitweaver\Liberty\LibertyComment;
@@ -78,9 +79,9 @@ class BitBoardPost extends LibertyComment {
 			//$gBitSystem->verifyPermission('p_boards_update');
 			//$pParamHash = (($pParamHash + 1)%2);
 			$query_sel = "SELECT * FROM `".BIT_DB_PREFIX."boards_posts` WHERE `comment_id` = ?";
-			$isStored = $this->mDb->getOne( $query_sel, array( $this->mCommentId ) );
+			$isStored = $this->mDb->getOne( $query_sel, [ $this->mCommentId ] );
 			if( $isStored ) {
-				$result = $this->mDb->associateUpdate( 'boards_posts', $pParamHash['post_store'], array( 'comment_id' => $this->mCommentId ) );
+				$result = $this->mDb->associateUpdate( 'boards_posts', $pParamHash['post_store'], [ 'comment_id' => $this->mCommentId ] );
 			} else {
 				$pParamHash['post_store']['comment_id'] = $this->mCommentId;
 				$result = $this->mDb->associateInsert( 'boards_posts', $pParamHash['post_store'] );
@@ -96,7 +97,7 @@ class BitBoardPost extends LibertyComment {
 	public function loadMetaData(): void {
 		if ($this->isValid()) {
 			if (!isset($this->mInfo['accepted'])) {
-				$key = array('comment_id' => $this->mCommentId);
+				$key = ['comment_id' => $this->mCommentId];
 				$query_sel = "SELECT
 				post.is_approved,
 				post.is_warned,
@@ -173,8 +174,8 @@ class BitBoardPost extends LibertyComment {
 			$whereSql .= " AND ((post.`is_approved` = 1) OR (lc.`user_id` >= 0))";
 		}
 
-        $pListHash = array( 'content_id' => $contentId, 'max_records' => $pMaxComments, 'offset'=>$pOffset, 'sort_mode'=> $pSortOrder, 'display_mode' => $pDisplayMode, 'has_comment_view_perm' => true );
-        $this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, $this, $pListHash );
+		$pListHash = [ 'content_id' => $contentId, 'max_records' => $pMaxComments, 'offset'=>$pOffset, 'sort_mode'=> $pSortOrder, 'display_mode' => $pDisplayMode, 'has_comment_view_perm' => true ];
+		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, $this, $pListHash );
 
 		if ($pContentId) {
 			$sql = "SELECT lcom.`comment_id`, lcom.`parent_id`, lcom.`root_id`,
@@ -201,10 +202,10 @@ class BitBoardPost extends LibertyComment {
 					if (empty($row['anon_name'])) {
 						$row['anon_name'] = "Anonymous";
 					}
-					$row['user_avatar_url'] = ( $row['avatar_file_name'] ) ? \Bitweaver\Liberty\liberty_fetch_thumbnail_url( array(
-						'source_file' => \Bitweaver\Liberty\liberty_mime_get_source_file( array( 'user_id' => $row['avatar_user_id'], 'file_name' => $row['avatar_file_name'], 'mime_type' => $row['avatar_mime_type'], 'attachment_id' => $row['avatar_attachment_id'] ) ),
+					$row['user_avatar_url'] = ( $row['avatar_file_name'] ) ? \Bitweaver\Liberty\liberty_fetch_thumbnail_url( [
+						'source_file' => \Bitweaver\Liberty\liberty_mime_get_source_file( [ 'user_id' => $row['avatar_user_id'], 'file_name' => $row['avatar_file_name'], 'mime_type' => $row['avatar_mime_type'], 'attachment_id' => $row['avatar_attachment_id'] ] ),
 						'size'        => 'avatar',
-					) ) : false;
+					] ) : false;
 					if (!empty($row['warned_message'])) {
 						$row['warned_message'] = str_replace("\n","<br />\n",$row['warned_message']);
 					}
@@ -220,7 +221,7 @@ class BitBoardPost extends LibertyComment {
 						// get attachments for each comment
 						global $gLibertySystem;
 						$query = "SELECT * FROM `".BIT_DB_PREFIX."liberty_attachments` la WHERE la.`content_id`=? ORDER BY la.`pos` ASC, la.`attachment_id` ASC";
-						if( $result2 = $this->mDb->query( $query,array( (int)$row['content_id'] ))) {
+						if( $result2 = $this->mDb->query( $query,[ (int)$row['content_id'] ])) {
 							while( $row2 = $result2->fetchRow() ) {
 								if( $func = $gLibertySystem->getPluginFunction( $row2['attachment_plugin_guid'], 'load_function', 'mime' )) {
 									// we will pass the preferences by reference that the plugin can easily update them
@@ -314,10 +315,10 @@ class BitBoardPost extends LibertyComment {
 		if( $result = $this->mDb->query( $sql, $bindVars, $pListHash['max_records'], $pListHash['offset'] ) ) {
 			while( $row = $result->FetchRow() ) {
 				if (empty($row['anon_name'])) $row['anon_name'] = "Anonymous";
-				$row['user_avatar_url'] = ( !empty( $row['avatar_file_name'] ) ) ? \Bitweaver\Liberty\liberty_fetch_thumbnail_url( array(
-					'source_file' => \Bitweaver\Liberty\liberty_mime_get_source_file( array( 'user_id' => $row['avatar_user_id'], 'file_name' => $row['avatar_file_name'], 'mime_type' => $row['avatar_mime_type'], 'attachment_id' => $row['avatar_attachment_id'] ) ),
+				$row['user_avatar_url'] = ( !empty( $row['avatar_file_name'] ) ) ? \Bitweaver\Liberty\liberty_fetch_thumbnail_url( [
+					'source_file' => \Bitweaver\Liberty\liberty_mime_get_source_file( [ 'user_id' => $row['avatar_user_id'], 'file_name' => $row['avatar_file_name'], 'mime_type' => $row['avatar_mime_type'], 'attachment_id' => $row['avatar_attachment_id'] ] ),
 					'size'        => 'avatar',
-				) ) : false;
+				] ) : false;
 				unset($row['avatar_file_name']);
 				if (!empty($row['warned_message'])) {
 					$row['warned_message'] = str_replace("\n","<br />\n",$row['warned_message']);
@@ -350,7 +351,7 @@ class BitBoardPost extends LibertyComment {
 		$bindVars = [];
 
 		$joinSql = $selectSql = $whereSql = '';
-		$paramHash = array( 'include_comments' => true );
+		$paramHash = [ 'include_comments' => true ];
 		$this->getServicesSql( 'content_list_sql_function', $selectSql, $joinSql, $whereSql, $bindVars, $this, $paramHash );
 
 		if ($pContentId) {

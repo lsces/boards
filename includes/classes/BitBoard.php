@@ -15,12 +15,12 @@
  * required setup
  */
 namespace Bitweaver\Boards;
+
 use Bitweaver\BitBase;
 use Bitweaver\KernelTools;
 use Bitweaver\Pigeonholes\Pigeonholes;
 use Bitweaver\Liberty\LibertyContent;
 use Bitweaver\Liberty\LibertyMime;
-use function intval;
 
 /**
 * This is used to uniquely identify the object
@@ -45,14 +45,14 @@ class BitBoard extends LibertyMime {
 		$this->mBitBoardId = (int)$pBitBoardId;
 		$this->mContentId = (int)$pContentId;
 		$this->mContentTypeGuid = BITBOARD_CONTENT_TYPE_GUID;
-		$this->registerContentType( BITBOARD_CONTENT_TYPE_GUID, array(
+		$this->registerContentType( BITBOARD_CONTENT_TYPE_GUID, [
 				'content_type_guid' => BITBOARD_CONTENT_TYPE_GUID,
 				'content_name' => 'Message Board',
 				'handler_class' => 'BitBoard',
 				'handler_package' => 'boards',
 				'handler_file' => 'BitBoard.php',
-				'maintainer_url' => 'https://www.bitweaver.org'
-		));
+				'maintainer_url' => 'https://www.bitweaver.org',
+		]);
 
 		// Permission setup
 		$this->mViewContentPerm  = 'p_boards_read';
@@ -107,7 +107,7 @@ class BitBoard extends LibertyMime {
 		global $gBitDb;
 		$ret = null;
 		if( BitBase::verifyId( $pMigrateBoardId ) ) {
-			$ret = $gBitDb->getOne( "SELECT `board_id` FROM `".BIT_DB_PREFIX."boards` bb WHERE `migrate_board_id`=?", array( $pMigrateBoardId ) );
+			$ret = $gBitDb->getOne( "SELECT `board_id` FROM `".BIT_DB_PREFIX."boards` bb WHERE `migrate_board_id`=?", [ $pMigrateBoardId ] );
 		}
 		return $ret;
 	}
@@ -137,12 +137,12 @@ class BitBoard extends LibertyMime {
 				$this->mBitBoardId = $pParamHash['board_store']['board_id'];
 
 				$result = $this->mDb->associateInsert( $table, $pParamHash['board_store'] );
-				$result = $this->mDb->associateInsert( BIT_DB_PREFIX."boards_map",array('board_content_id'=>$pParamHash['board_store']['content_id'],'topic_content_id'=>$pParamHash['board_store']['content_id']));
+				$result = $this->mDb->associateInsert( BIT_DB_PREFIX."boards_map",['board_content_id'=>$pParamHash['board_store']['content_id'],'topic_content_id'=>$pParamHash['board_store']['content_id']]);
 				if( !empty( $pParamHash['boards_mailing_list'] ) ) {
 					global $gBitSystem, $gBitUser;
 					require_once( UTIL_PKG_INCLUDE_PATH.'mailman_lib.php' );
 					if( $gBitSystem->getConfig( 'boards_sync_mail_server' ) ) {
-						if( !($error = mailman_newlist( array( 'listname' => $pParamHash['boards_mailing_list'], 'listhost' => $gBitSystem->getConfig( 'boards_email_host', $gBitSystem->getConfig( 'kernel_server_name' ) ), 'admin-password'=>$pParamHash['boards_mailing_list_password'], 'listadmin-addr'=>$gBitUser->getField( 'email' ) ) )) ) {
+						if( !($error = mailman_newlist( [ 'listname' => $pParamHash['boards_mailing_list'], 'listhost' => $gBitSystem->getConfig( 'boards_email_host', $gBitSystem->getConfig( 'kernel_server_name' ) ), 'admin-password'=>$pParamHash['boards_mailing_list_password'], 'listadmin-addr'=>$gBitUser->getField( 'email' ) ] )) ) {
 							$this->storePreference( 'boards_mailing_list', !empty( $pParamHash['boards_mailing_list'] ) ? $pParamHash['boards_mailing_list'] : null );
 							$this->storePreference( 'boards_mailing_list_password', $pParamHash['boards_mailing_list_password'] );
 							// Subscribe the owner
@@ -239,7 +239,6 @@ class BitBoard extends LibertyMime {
 		return( count( $this->mErrors )== 0 );
 	}
 
-
 	/**
 	 * Prepare data for preview
 	 */
@@ -268,7 +267,6 @@ class BitBoard extends LibertyMime {
 		}
 	}
 
-
 	/**
 	* This function removes a bitboard entry
 	**/
@@ -277,9 +275,9 @@ class BitBoard extends LibertyMime {
 			$this->StartTrans();
 			$mailingList = $this->getPreference( 'boards_mailing_list' );
 			$query = "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `board_content_id` = ?";
-			$result = $this->mDb->query( $query, array( $this->mContentId ) );
+			$result = $this->mDb->query( $query, [ $this->mContentId ] );
 			$query = "DELETE FROM `".BIT_DB_PREFIX."boards` WHERE `content_id` = ?";
-			$result = $this->mDb->query( $query, array( $this->mContentId ) );
+			$result = $this->mDb->query( $query, [ $this->mContentId ] );
 			if( LibertyMime::expunge() ) {
 				if( $mailingList ) {
 					require_once UTIL_PKG_INCLUDE_PATH.'mailman_lib.php';
@@ -358,10 +356,10 @@ class BitBoard extends LibertyMime {
 
 	function addContent($content_id) {
 		if (BitBase::verifyId($content_id)) {
-			$data = array(
+			$data = [
 			'board_content_id'=>$this->mContentId,
 			'topic_content_id'=>$content_id,
-			);
+			];
 			$this->mDb->associateInsert( BIT_DB_PREFIX."boards_map",$data);
 		}
 	}
@@ -369,7 +367,7 @@ class BitBoard extends LibertyMime {
 	function removeContent($content_id) {
 		if (BitBase::verifyId($content_id) && BitBase::verifyId($this->mContentId)) {
 			$sql = "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `board_content_id` = ? AND `topic_content_id` = ?";
-			$result = $this->mDb->query( $sql, array( $this->mContentId,$content_id ) );
+			$result = $this->mDb->query( $sql, [ $this->mContentId,$content_id ] );
 		}
 	}
 
@@ -383,7 +381,7 @@ class BitBoard extends LibertyMime {
 				INNER JOIN  `".BIT_DB_PREFIX."boards_map` map ON (map.`board_content_id`= b.`content_id`)
 				WHERE b.`board_id`=? AND map.`board_content_id` = map.`topic_content_id`
 			";
-			$count = $this->mDb->getOne( $sql, array( $this->mBitBoardId ));
+			$count = $this->mDb->getOne( $sql, [ $this->mBitBoardId ]);
 			return ($count==1);
 		}
 		return $ret;
@@ -401,7 +399,7 @@ class BitBoard extends LibertyMime {
 		$ret = null;
 		if (BitBase::verifyId($content_id)) {
 			$sql = "SELECT `board_content_id` FROM `".BIT_DB_PREFIX."boards_map` map WHERE map.`topic_content_id`=?";
-			$ret = $gBitDb->getOne( $sql, array( $content_id ));
+			$ret = $gBitDb->getOne( $sql, [ $content_id ]);
 		}
 		return $ret;
 	}
@@ -430,7 +428,7 @@ class BitBoard extends LibertyMime {
 					WHERE b.`board_id`=? AND map.`board_content_id`!=map.`topic_content_id`
 					ORDER BY order_key
 					";
-			$rs = $this->mDb->query( $sql, array( $this->mBitBoardId ));
+			$rs = $this->mDb->query( $sql, [ $this->mBitBoardId ]);
 			while( $row = $rs->fetchRow() ) {
 				$ret[$row['t_content_id']] = $row;
 			}
@@ -549,14 +547,14 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 					INNER JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON (map.`topic_content_id` = lcom.`root_id`)
 					INNER JOIN `".BIT_DB_PREFIX."liberty_content` slc ON( slc.`content_id` = lcom.`content_id` )
 					LEFT JOIN `".BIT_DB_PREFIX."boards_posts` fp ON (fp.`comment_id` = lcom.`comment_id`)
-				WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS null))", array( $res['content_id'] ) );
+				WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS null))", [ $res['content_id'] ] );
 
 			$res['post_count'] = $this->mDb->getOne( "SELECT count(*)
 				FROM `".BIT_DB_PREFIX."liberty_comments` lcom
 					INNER JOIN `".BIT_DB_PREFIX."liberty_content` slc ON( slc.`content_id` = lcom.`content_id` )
 					INNER JOIN `".BIT_DB_PREFIX."boards_map` map ON (lcom.`root_id`=map.`topic_content_id`)
 					LEFT JOIN `".BIT_DB_PREFIX."boards_posts` fp ON (fp.`comment_id` = lcom.`comment_id`)
-				WHERE map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS null))", array( $res['content_id'] ) );
+				WHERE map.`board_content_id`=? AND ((fp.`is_approved` = 1) OR (fp.`is_approved` IS null))", [ $res['content_id'] ] );
 			if($track) {
 				if ($gBitUser->isRegistered()) {
 					$res['track']['on'] = true;
@@ -589,12 +587,12 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 			WHERE lcom.`root_id`=lcom.`parent_id` AND map.`board_content_id`=? AND ((fp.`is_approved` IS null OR fp.`is_approved` = 1) OR (slc.`user_id` >= 0))
 		    ORDER BY slc.`last_modified` DESC
 	    ";
-		$result = $this->mDb->getRow( $query, array( $data['content_id'] ) );
+		$result = $this->mDb->getRow( $query, [ $data['content_id'] ] );
 		if (!empty($result['topic_id'])) {
 			if (empty($result['l_anon_name'])) {
 				$result['l_anon_name'] = "Anonymous";
 			}
-			$result['topic_id']=intval($result['topic_id']);
+			$result['topic_id']=(int) ($result['topic_id']);
 			$result['url'] = BitBoardTopic::getDisplayUrlFromHash( $result );
 		}
 		return $result;
@@ -700,8 +698,8 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 			if( $result && $result->numRows() ) {
 				$ret = $result->fields;
 
-				$ret['creator'] =( isset( $result->fields['creator_real_name'] )? $result->fields['creator_real_name'] : $result->fields['creator_user'] );
-				$ret['editor'] =( isset( $result->fields['modifier_real_name'] )? $result->fields['modifier_real_name'] : $result->fields['modifier_user'] );
+				$ret['creator'] =( $result->fields['creator_real_name'] ?? $result->fields['creator_user'] );
+				$ret['editor'] =( $result->fields['modifier_real_name'] ?? $result->fields['modifier_user'] );
 				$ret['display_url'] = BIT_ROOT_URL."index.php?content_id=$contentId";
 			}
 		}
@@ -718,11 +716,10 @@ WHERE map.`board_content_id`=lc.`content_id` AND ((s_lc.`user_id` < 0) AND (s.`i
 						LEFT JOIN `".BIT_DB_PREFIX."liberty_comments` lcom ON (lcom.`root_id`=bm.`topic_content_id`)
 					WHERE bm.`topic_content_id`=?
 					GROUP BY b.`board_id`, b.`content_id`";
-			$ret = $gBitDb->getRow( $sql, array( $pContentId ) );
+			$ret = $gBitDb->getRow( $sql, [ $pContentId ] );
 		}
 		return $ret;
 	}
-
 
 	// =-=-=-=-=-=-=-=-=-=-=-=-=-= Board Sync Methods =-=-=-=-=-=-=-=-=-=-=-=-=-=
 	function getBoardSyncInbox() {
@@ -777,7 +774,7 @@ function boards_content_store( $pContent, $pParamHash ) {
 		// wipe out all previous assignments for good measure. Not the sanest thing to do, but edits are infrequent - at least for now
 		if ($gBitSystem->isFeatureActive('boards_link_by_pigeonholes') && $gBitSystem->isPackageActive('pigeonholes')) {
 			// Delete all old mappings
-			$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", array( $pContent->mContentId ) );
+			$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", [ $pContent->mContentId ] );
 
 			// Get the pigeonholes this content is in
 			$p = null;
@@ -789,29 +786,29 @@ function boards_content_store( $pContent, $pParamHash ) {
 
 					// What boards are in the same pigeonhole?
 					$params =
-						array('content_type_guid' => BITBOARD_CONTENT_TYPE_GUID,
-							  'content_id' => $p_id );
+						['content_type_guid' => BITBOARD_CONTENT_TYPE_GUID,
+							  'content_id' => $p_id, ];
 					$boards = $p->getMemberList( $params );
 
 					// Insert into these boards
 					foreach ($boards as $board) {
 						if( BitBase::verifyId( $board['content_id'] ) ) {
-							$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", array( $board['content_id'], $pContent->mContentId ) );
+							$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", [ $board['content_id'], $pContent->mContentId ] );
 						}
 					}
 				}
 			}
 		}
 		else {
-			$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", array( $pContent->mContentId ) );
+			$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", [ $pContent->mContentId ] );
 			if( BitBase::verifyId( $pParamHash['linked_board_cid'] ?? 0 ) ) {
-				$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", array( $pParamHash['linked_board_cid'], $pContent->mContentId ) );
+				$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", [ $pParamHash['linked_board_cid'], $pContent->mContentId ] );
 			}
 		}
 		$gBitSmarty->assign( 'boardInfo', BitBoard::getLinkedBoard( $pContent->mContentId ) );
 	} else {
 		if( BitBase::verifyId( $pParamHash['content_id'] ?? 0 ) && BitBase::verifyId( $pParamHash['linked_board_cid'] ?? 0 ) ) {
-			$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", array( $pParamHash['linked_board_cid'], $pParamHash['content_id'] ) );
+			$pContent->mDb->query( "INSERT INTO `".BIT_DB_PREFIX."boards_map` (`board_content_id`,`topic_content_id`) VALUES (?,?)", [ $pParamHash['linked_board_cid'], $pParamHash['content_id'] ] );
 		}
 	}
 }
@@ -850,6 +847,6 @@ function boards_content_verify( &$pObject, &$pParamHash ){
 function boards_content_expunge( $pContent ) {
 	global $gBitSmarty;
 	if( $pContent->isValid() ) {
-		$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", array( $pContent->mContentId ) );
+		$pContent->mDb->query( "DELETE FROM `".BIT_DB_PREFIX."boards_map` WHERE `topic_content_id`=?", [ $pContent->mContentId ] );
 	}
 }

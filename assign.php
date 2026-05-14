@@ -31,9 +31,9 @@ if (!empty($_REQUEST['remove'])) {
 					$b->removeContent($content_id);
 				}
 			}
-		}else{
-			// @TODO assign error and report back to user which were not processed
 		}
+			// @TODO assign error and report back to user which were not processed
+
 	}
 }
 
@@ -60,5 +60,5 @@ $data = BitBoard::getAllMap();
 $gBitSmarty->assign('data',$data);
 
 // Display the template
-$gBitSystem->display( 'bitpackage:boards/board_assign.tpl', tra('Assign content to Board') , array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:boards/board_assign.tpl', tra('Assign content to Board') , [ 'display_mode' => 'display' ]);
 ?>

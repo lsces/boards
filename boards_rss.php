@@ -60,7 +60,6 @@ $rss->title = $title;
 $rss->description = $description;
 $rss->link =  $gContent->getDisplayUri();
 
-
 // get all topics of a board or all recent topics in general
 switch( $gContent->getField('content_type_guid') ){
 	case 'bitcomment':

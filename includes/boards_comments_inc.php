@@ -35,7 +35,7 @@ if (!function_exists("send_board_email")) {
 				$headerHash['from_name'] = $storeComment->getField( 'anon_name' );
 				$headerHash['from'] = 'anonymous@'.$gBitSystem->getConfig('boards_sync_mail_server');
 			} else {
-				$userInfo = $gBitUser->getUserInfo( array( 'user_id' => $storeComment->getField( 'user_id', $gBitUser->mUserId ) ) );
+				$userInfo = $gBitUser->getUserInfo( [ 'user_id' => $storeComment->getField( 'user_id', $gBitUser->mUserId ) ] );
 				$headerHash['from_name'] = !empty( $userInfo['real_name'] ) ? $userInfo['real_name'] : $userInfo['login'];
 				$headerHash['from'] = $userInfo['email'];
 				$headerHash['sender'] = $userInfo['email'];

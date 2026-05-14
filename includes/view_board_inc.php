@@ -12,6 +12,7 @@
  * required setup
  */
 namespace Bitweaver\Boards;
+
 require_once '../kernel/includes/setup_inc.php';
 use Bitweaver\BitBase;
 use Bitweaver\HttpStatusCodes;
@@ -40,7 +41,7 @@ if( !$gContent->isValid() ) {
 if (!empty($_REQUEST['action'])) {
 	// Check edit perms on the group
 	$gContent->verifyUpdatePermission();
-	
+
 	// Check the ticket
 	$gBitUser->verifyTicket();
 
@@ -52,7 +53,7 @@ if (!empty($_REQUEST['action'])) {
 	if (!$comment->isValid()) {
 		$gBitSystem->fatalError("Invalid Comment Id");
 	}
-	
+
 	// Take action
 	switch ($_REQUEST['action']) {
 		case 1:
@@ -79,11 +80,10 @@ if (!empty($_REQUEST['action'])) {
  */
 require_once BOARDS_PKG_INCLUDE_PATH.'edit_topic_inc.php';
 
-
 // Ok finally we can get on with viewing our board
 
 // liberty display services
-$displayHash = array( 'perm_name' => 'p_boards_read' );
+$displayHash = [ 'perm_name' => 'p_boards_read' ];
 $gContent->invokeServices( 'content_display_function', $displayHash );
 
 // set some comment values since topics are comments
@@ -99,7 +99,7 @@ require_once BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php';
 $threads = new BitBoardTopic( $gContent->mContentId );
 
 // lets pass in a ref to the root obj so we can fully mimic comments
-$threads->mRootObj = $gContent; 
+$threads->mRootObj = $gContent;
 $threadsListHash = $_REQUEST;
 $threadList = $threads->getList( $threadsListHash );
 
@@ -114,4 +114,4 @@ $gBitSmarty->assign( 'cat_url', BOARDS_PKG_URL."index.php"); //?ct=".urlencode($
 $gBitThemes->loadAjax( 'mochikit' );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:boards/list_topics.tpl', tra( 'Message Board Threads: ' . $gContent->getField('title') ) , array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:boards/list_topics.tpl', tra( 'Message Board Threads: ' . $gContent->getField('title') ) , [ 'display_mode' => 'display' ]);

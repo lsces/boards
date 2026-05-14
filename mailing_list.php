@@ -36,7 +36,7 @@ if( $boardSyncInbox = BitBoard::getBoardSyncInbox() ) {
 
 if( !empty( $_REQUEST['create_list'] ) ) {
 	//------ Email List ------//
-	if( !($error = mailman_newlist( array( 'listname' => $_REQUEST['boards_mailing_list'], 'admin-password'=>$_REQUEST['boards_mailing_list_password'], 'listadmin-addr'=>$gBitUser->getField( 'email' ) ) )) ) {
+	if( !($error = mailman_newlist( [ 'listname' => $_REQUEST['boards_mailing_list'], 'admin-password'=>$_REQUEST['boards_mailing_list_password'], 'listadmin-addr'=>$gBitUser->getField( 'email' ) ] )) ) {
 		$gContent->storePreference( 'boards_mailing_list', !empty( $_REQUEST['boards_mailing_list'] ) ? $_REQUEST['boards_mailing_list'] : null );
 		$gContent->storePreference( 'boards_mailing_list_password', $_REQUEST['boards_mailing_list_password'] );
 	} else {
@@ -54,10 +54,10 @@ if( !empty( $_REQUEST['create_list'] ) ) {
 			$formHash['delete_list'] = true;
 			$formHash['b'] = $gContent->getField( 'board_id' );
 			$gBitSystem->confirmDialog(	$formHash,
-				array(
+				[
 					'warning' => tra('Are you sure you want to delete this mailing list?') . ' ' . $gContent->getTitle(),
 					'error' => tra('This cannot be undone!'),
-				)
+				],
 			);
 		} else {
 			if( !($error = mailman_rmlist( $gContent->getPreference( 'boards_mailing_list' ) )) ) {
@@ -75,7 +75,7 @@ if( !empty( $_REQUEST['create_list'] ) ) {
 	// check for submits that need boards_mailing_list
 	if( !empty( $_REQUEST['subscribe_boardsync'] ) ) {
 	  if( $gContent->getPreference('board_sync_list_address') ) {
-	  	mailman_addmember( $gContent->getPreference( 'boards_mailing_list' ), $boardSyncInbox );
+		mailman_addmember( $gContent->getPreference( 'boards_mailing_list' ), $boardSyncInbox );
 		mailman_setmoderator( $gContent->getPreference( 'boards_mailing_list' ), $boardSyncInbox );
 	  }
 	} elseif( !empty( $_REQUEST['unsubscribe_boardsync'] ) ) {
@@ -101,5 +101,5 @@ if( $gContent->getBoardMailingList() ) {
 
 // display
 $gBitSmarty->assign( 'board', $gContent );
-$gBitSystem->display( "bitpackage:boards/mailing_list.tpl", $gContent->getTitle() ." ".  tra( 'Message Board Mailing List' ) , array( 'display_mode' => 'list' ));
+$gBitSystem->display( "bitpackage:boards/mailing_list.tpl", $gContent->getTitle() ." ".  tra( 'Message Board Mailing List' ) , [ 'display_mode' => 'list' ]);
 ?>

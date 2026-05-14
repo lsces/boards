@@ -16,7 +16,7 @@ require_once '../kernel/includes/setup_inc.php';
 $gBitSystem->verifyPackage( 'boards' );
 $gBitSystem->verifyPackage( 'rss' );
 
-$feedFormat = array(
+$feedFormat = [
 	0 => "RSS 0.91",
 	1 => "RSS 1.0",
 	2 => "RSS 2.0",
@@ -27,7 +27,7 @@ $feedFormat = array(
 	7 => "OPML",
 	8 => "HTML",
 	9 => "JS",
-);
+];
 $gBitSmarty->assign( "feedFormat", $feedFormat );
 
 // Load up the board or topic
@@ -40,7 +40,7 @@ if( !empty( $_REQUEST['get_feed'] ) ) {
 			$feedlink['url'] .= 't='.$_REQUEST['t']."&";
 		}elseif( !empty($_REQUEST['b'] ) ){
 			$feedlink['url'] .= 'b='.$_REQUEST['b']."&";
-		} 
+		}
 	}
 	$feedlink['url'] .= 'version='.$_REQUEST['format'].( $gBitSystem->getConfig( 'rssfeed_httpauth' ) && $gBitUser->isRegistered()?'&httpauth=y':'');
 	$feedlink['title'] = ( $gContent->getField('title') != null ?$gContent->getField('title'):tra('Boards')).' - '.$feedFormat[$_REQUEST['format']];
@@ -51,4 +51,4 @@ if( !empty( $_REQUEST['get_feed'] ) ) {
 
 $gBitSmarty->assign( 'feedlink', $feedlink );
 
-$gBitSystem->display( 'bitpackage:boards/boards_rss_form.tpl', KernelTools::tra( 'Select Feed' ) , array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:boards/boards_rss_form.tpl', KernelTools::tra( 'Select Feed' ) , [ 'display_mode' => 'display' ]);

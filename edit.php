@@ -36,7 +36,7 @@ if( isset( $_REQUEST['remove'] ) ) {
 		if( empty( $_REQUEST['confirm'] ) ) {
 			$formHash['b'] = $_REQUEST['b'];
 			$formHash['remove'] = true;
-			$gBitSystem->confirmDialog( $formHash, array( 'warning' => tra( 'Are you sure you want to remove the entire message board' ).' "'.$gContent->getTitle().'" ?', 'error' => 'This cannot be undone!' ) );
+			$gBitSystem->confirmDialog( $formHash, [ 'warning' => tra( 'Are you sure you want to remove the entire message board' ).' "'.$gContent->getTitle().'" ?', 'error' => 'This cannot be undone!' ] );
 		} elseif( !$gContent->expunge() ) {
 			$gBitSmarty->assign( 'errors', $deleteComment->mErrors );
 		} else {
@@ -74,5 +74,5 @@ if( !empty( $_REQUEST["save_bitboard"] ) ) {
 }
 
 // Display the template
-$gBitSystem->display( 'bitpackage:boards/board_edit.tpl', tra('Board') , array( 'display_mode' => 'edit' ));
+$gBitSystem->display( 'bitpackage:boards/board_edit.tpl', tra('Board') , [ 'display_mode' => 'edit' ]);
 ?>

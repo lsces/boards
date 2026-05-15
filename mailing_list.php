@@ -12,6 +12,7 @@
 /**
  * required setup
  */
+use Bitweaver\KernelTools;
 require_once '../kernel/includes/setup_inc.php';
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardPost.php' );
@@ -24,7 +25,7 @@ $gBitSystem->verifyPackage( 'boards' );
 
 // Verify we found a board
 if( !$gContent->isValid() ) {
-  $gBitSystem->fatalError(tra("Error: No such board."));
+  $gBitSystem->fatalError(KernelTools::tra("Error: No such board."));
 }
 
 // Now check permissions to access this page
@@ -55,15 +56,15 @@ if( !empty( $_REQUEST['create_list'] ) ) {
 			$formHash['b'] = $gContent->getField( 'board_id' );
 			$gBitSystem->confirmDialog(	$formHash,
 				[
-					'warning' => tra('Are you sure you want to delete this mailing list?') . ' ' . $gContent->getTitle(),
-					'error' => tra('This cannot be undone!'),
+					'warning' => KernelTools::tra('Are you sure you want to delete this mailing list?') . ' ' . $gContent->getTitle(),
+					'error' => KernelTools::tra('This cannot be undone!'),
 				],
 			);
 		} else {
 			if( !($error = mailman_rmlist( $gContent->getPreference( 'boards_mailing_list' ) )) ) {
 				$gContent->storePreference( 'boards_mailing_list', null );
 				$gContent->storePreference( 'boards_mailing_list_password', null );
-				bit_redirect( BOARDS_PKG_URL."mailing_list.php?b=".$gContent->getField( 'board_id' ) );
+				KernelTools::bit_redirect( BOARDS_PKG_URL."mailing_list.php?b=".$gContent->getField( 'board_id' ) );
 			} else {
 				$gBitSmarty->assign( 'errorMsg', $error );
 			}
@@ -101,5 +102,5 @@ if( $gContent->getBoardMailingList() ) {
 
 // display
 $gBitSmarty->assign( 'board', $gContent );
-$gBitSystem->display( "bitpackage:boards/mailing_list.tpl", $gContent->getTitle() ." ".  tra( 'Message Board Mailing List' ) , [ 'display_mode' => 'list' ]);
+$gBitSystem->display( "bitpackage:boards/mailing_list.tpl", $gContent->getTitle() ." ".  KernelTools::tra( 'Message Board Mailing List' ) , [ 'display_mode' => 'list' ]);
 ?>

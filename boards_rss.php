@@ -6,6 +6,7 @@
  */
 
 use Bitweaver\Users\RoleUser;
+use Bitweaver\KernelTools;
 
 /**
  * Initialization
@@ -26,7 +27,7 @@ if( !empty( $_REQUEST['t'] ) || !empty($_REQUEST['b'] ) ){
 		$gContent->load();
 	}
 	else{
-		$gBitSystem->fatalError(tra("Unknown discussion"), null, null, HttpStatusCodes::HTTP_GONE );
+		$gBitSystem->fatalError(KernelTools::tra("Unknown discussion"), null, null, HttpStatusCodes::HTTP_GONE );
 	}
 }
 $gContent->verifyViewPermission();
@@ -52,8 +53,8 @@ switch( $gContent->getField('content_type_guid') ){
 $cacheFile.="_".$cacheFileTail;
 $rss->useCached( $rss_version_name, $cacheFile, $gBitSystem->getConfig( 'rssfeed_cache_time' ));
 
-$title = tra("Recent Discussions");
-$description = tra("All recent forum discussions on ".$gBitSystem->getConfig( 'site_title' ) );
+$title = KernelTools::tra("Recent Discussions");
+$description = KernelTools::tra("All recent forum discussions on ".$gBitSystem->getConfig( 'site_title' ) );
 if( $gContent->isValid() ){
 	$title = $gContent->getField( 'title' )." Feed";
 	$description = $gContent->getParsedData();

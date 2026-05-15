@@ -14,6 +14,7 @@ we look if any page's checkbox is on and if remove_boards is selected.
 then we check permission to delete boards.
 if so, we call histlib's method remove_all_versions for all the checked boards.
 */
+use Bitweaver\KernelTools;
 if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQUEST["submit_mult"] == "remove_boards" ) {
 
 	// Now check permissions to remove the selected bitboard
@@ -31,8 +32,8 @@ if( isset( $_REQUEST["submit_mult"] ) && isset( $_REQUEST["checked"] ) && $_REQU
 		}
 		$gBitSystem->confirmDialog( $formHash,
 			[
-				'warning' => tra('Are you sure you want to delete these topics?') . ' (' . tra('Count: ') . count( $_REQUEST["checked"] ) . ')',
-				'error' => tra('This cannot be undone!'),
+				'warning' => KernelTools::tra('Are you sure you want to delete these topics?') . ' (' . KernelTools::tra('Count: ') . count( $_REQUEST["checked"] ) . ')',
+				'error' => KernelTools::tra('This cannot be undone!'),
 			],
 		);
 	} else {

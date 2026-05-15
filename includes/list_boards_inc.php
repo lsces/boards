@@ -11,6 +11,7 @@
 /**
  * required setup
  */
+use Bitweaver\KernelTools;
 require_once("../kernel/includes/setup_inc.php");
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardTopic.php' );
 require_once( BOARDS_PKG_CLASS_PATH.'BitBoardPost.php' );
@@ -126,6 +127,6 @@ foreach ($ns as $k=> $a) {
 }
 
 //$gBitSmarty->display( 'bitpackage:boards/cat_display.tpl');
-$gBitSystem->display( 'bitpackage:boards/list_boards.tpl', tra( 'Boards' ) , [ 'display_mode' => 'display' ]);
+$gBitSystem->display( 'bitpackage:boards/list_boards.tpl', KernelTools::tra( 'Boards' ) , [ 'display_mode' => 'display' ]);
 
 ?>

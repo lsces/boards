@@ -11,15 +11,16 @@
 * @date created 2008-APR-06
 * @author wjames <will@tekimaki.com> spider <spider@viovio.com>
 */
+use Bitweaver\KernelTools;
 
 function mailman_verify_list( $pListName ) {
 	$error = NULL;
 	if( $matches = preg_match( '/[^A-Za-z0-9\-\_]/', $pListName ) ) {
-		$error = tra( "Invalid mailing list name" ).": ".tra( "List names can only contain letters and numbers" );
+		$error = KernelTools::tra( "Invalid mailing list name" ).": ".KernelTools::tra( "List names can only contain letters and numbers" );
 	} else {
 		$lists = mailman_list_lists();
 		if( !empty( $lists[strtolower($pListName)] ) ) {
-			$error = tra( "Invalid mailing list name" ).": ".tra( "List already exists" );
+			$error = KernelTools::tra( "Invalid mailing list name" ).": ".KernelTools::tra( "List already exists" );
 		}
 	}
 	return $error;
@@ -28,7 +29,7 @@ function mailman_verify_list( $pListName ) {
 function mailman_list_lists() {
 	$ret = [];
 	if( $ret_code = mailman_command( "list_lists", $output) ) {
-		mailman_fatal(tra("Unable to list lists."), $ret_code);
+		mailman_fatal(KernelTools::tra("Unable to list lists."), $ret_code);
 	}
 	else {
 		foreach( $output as $o ) {
@@ -45,7 +46,7 @@ function mailman_list_members( $pListName ) {
 	$ret = [];
 	$options = escapeshellarg( $pListName );
 	if( $ret = mailman_command( "list_members", $output, $options ) ) {
-	  //		mailman_fatal(tra('Unable to get members for list: ').$pListName, $ret);
+	  //		mailman_fatal(KernelTools::tra('Unable to get members for list: ').$pListName, $ret);
 	}
 	return( $output );
 }
@@ -55,7 +56,7 @@ function mailman_config_list( $pParamHash ){
 	$options = " -i ".escapeshellarg(UTIL_PKG_INCLUDE_PATH."mailman.cfg");
 	$options .= " ".escapeshellarg( $pParamHash["listname"] );
 	if( $ret = mailman_command( "config_list", $output, $options) ) {
-		return (tra("Unable to configure list: ").$pParamHash["listname"].":".$ret);
+		return (KernelTools::tra("Unable to configure list: ").$pParamHash["listname"].":".$ret);
 	}
 }
 
@@ -72,14 +73,14 @@ function mailman_newlist( $pParamHash ) {
 		$options .= " ".escapeshellarg( $pParamHash["admin-password"] )." ";
 
 		if( $ret = mailman_command( "newlist", $output, $options ) ) {
-			return (tra("Unable to create list: ").$pParamHash["listname"].":".$ret);
+			return (KernelTools::tra("Unable to create list: ").$pParamHash["listname"].":".$ret);
 		}
 
 		$options = " -i ".escapeshellarg(UTIL_PKG_INCLUDE_PATH."mailman.cfg");
 		$options .= " ".escapeshellarg( $pParamHash["listname"] );
 		if( $ret = mailman_command( "config_list", $output, $options) ) {
 			// @TODO if this fails we should roll back the newlist created
-			return (tra("Unable to configure list: ").$pParamHash["listname"].":".$ret);
+			return (KernelTools::tra("Unable to configure list: ").$pParamHash["listname"].":".$ret);
 		}
 
 		$newList = $pParamHash["listname"];
@@ -197,7 +198,7 @@ function mailman_addmember( $pListName, $pEmail, $pType = NULL ) {
 function mailman_findmember( $pListName, $pEmail ) {
 	$options = " -l ".escapeshellarg( $pListName )." ".escapeshellarg( $pEmail );
 	if( $ret = mailman_command( "find_member", $output, $options ) ) {
-		mailman_fatal(tra("Unable to find member in list: ").$pListName, $ret);
+		mailman_fatal(KernelTools::tra("Unable to find member in list: ").$pListName, $ret);
 	}
 	return $output;
 }
@@ -230,7 +231,7 @@ function mailman_rmlist( $pListName ) {
 	if( mailman_verify_list( $pListName ) ) {
 		$options = " -a ".escapeshellarg( $pListName );
 		if( $ret = mailman_command( "rmlist", $output, $options ) ) {
-			mailman_fatal(tra("Unable to remove list: ").$pListName, $ret);
+			mailman_fatal(KernelTools::tra("Unable to remove list: ").$pListName, $ret);
 		}
 
 		$newList = $pListName;
@@ -340,7 +341,7 @@ function mailman_command( $pCommand, &$output, $pOptions=NULL ) {
 
 function mailman_fatal($pMessage, $pRetCode) {
 	global $gBitSystem;
-	$gBitSystem->fatalError($pMessage.tra(" Command returned: ").$pRetCode);
+	$gBitSystem->fatalError($pMessage.KernelTools::tra(" Command returned: ").$pRetCode);
 	die;
 }
 

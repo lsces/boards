@@ -1,5 +1,6 @@
 <?php
 use Bitweaver\Users\RolePermUser;
+use Bitweaver\KernelTools;
 
 function board_sync_run($pLog = false) {
 	global $gBitUser, $gBitSystem;
@@ -39,7 +40,7 @@ function board_sync_run($pLog = false) {
 						$filename = 'orginal_email.eml';
 						srand( time() );
 						$filestore = TEMP_PKG_PATH.BOARDS_PKG_NAME.'/boardsync/'.rand( 999, 999999999 ).'/'.$filename;
-						mkdir_p( dirname( $filestore ) );
+						KernelTools::mkdir_p( dirname( $filestore ) );
 						$fp=fopen( $filestore, "w+" );
 						fwrite( $fp, $body );
 						fclose( $fp );
@@ -89,7 +90,7 @@ function board_sync_run($pLog = false) {
 		// clear everything we've written to the temp directory
 		$dir = TEMP_PKG_PATH.BOARDS_PKG_NAME.'/boardsync';
 		if( is_dir( $dir ) && strpos( $dir, BIT_ROOT_PATH ) === 0 ) {
-			if( !unlink_r( $dir ) ) {
+			if( !KernelTools::unlink_r( $dir ) ) {
 				bit_error_log( "Failed to clear directory: ".$dir." in boards package mailinglist synchronization." );
 			}
 		}
@@ -159,7 +160,7 @@ function board_parse_msg_parts( &$pPartHash, $pMbox, $pMsgId, $pMsgPart, $pPartN
 					//where to write file attachments to
 					srand( time() );
 					$filestore = TEMP_PKG_PATH.BOARDS_PKG_NAME.'/boardsync/'.rand( 999, 999999999 ).'/'.$filename;
-					mkdir_p( dirname( $filestore ) );
+					KernelTools::mkdir_p( dirname( $filestore ) );
 					$pPartHash[$pPartNum]['attachment'] = $filestore;
 					$fp=fopen( $filestore, "w+" );
 					fwrite( $fp, $part );
@@ -256,7 +257,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 					} elseif( preg_match('/<\s*(.*)\s*>\s*(.*)\s*/', $s, $matches) ) {
 						$toAddresses[] = [ 'email'=>$matches[1], 'name'=>$matches[2] ];
 					}
-				} elseif( validate_email_syntax( $s ) ) {
+				} elseif( KernelTools::validate_email_syntax( $s ) ) {
 					$toAddresses[] = [ 'email'=>$s ];
 				}
 			}
@@ -555,7 +556,7 @@ function board_sync_delivered_to( $raw_headers ) {
 		$ret = [];
 		foreach ($deliveredTo[1] as $address) {
 			// Make sure the Delivered-To: address is valid.
-			if (validate_email_syntax( $address ) ) {
+			if (KernelTools::validate_email_syntax( $address ) ) {
 				$ret[] = strtolower(trim($address));
 			}
 		}

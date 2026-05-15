@@ -11,6 +11,7 @@
 /**
  * required setup
  */
+use Bitweaver\KernelTools;
 require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
@@ -60,5 +61,5 @@ $data = BitBoard::getAllMap();
 $gBitSmarty->assign('data',$data);
 
 // Display the template
-$gBitSystem->display( 'bitpackage:boards/board_assign.tpl', tra('Assign content to Board') , [ 'display_mode' => 'display' ]);
+$gBitSystem->display( 'bitpackage:boards/board_assign.tpl', KernelTools::tra('Assign content to Board') , [ 'display_mode' => 'display' ]);
 ?>

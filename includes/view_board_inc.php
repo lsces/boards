@@ -16,6 +16,7 @@ namespace Bitweaver\Boards;
 require_once '../kernel/includes/setup_inc.php';
 use Bitweaver\BitBase;
 use Bitweaver\HttpStatusCodes;
+use Bitweaver\KernelTools;
 
 // Is package installed and enabled
 $gBitSystem->verifyPackage( 'boards' );
@@ -24,7 +25,7 @@ $gBitSystem->verifyPackage( 'boards' );
 if ( BitBase::verifyId( $_REQUEST['migrate_board_id'] ?? 0 ) ) {
 
 	if( $_REQUEST['b'] = BitBoard::lookupByMigrateBoard( $_REQUEST['migrate_board_id'] ) ) {
-		bit_redirect( BOARDS_PKG_URL.'index.php?b='. $_REQUEST['b'] );
+		KernelTools::bit_redirect( BOARDS_PKG_URL.'index.php?b='. $_REQUEST['b'] );
 	}
 }
 
@@ -114,4 +115,4 @@ $gBitSmarty->assign( 'cat_url', BOARDS_PKG_URL."index.php"); //?ct=".urlencode($
 $gBitThemes->loadAjax( 'mochikit' );
 
 // Display the template
-$gBitSystem->display( 'bitpackage:boards/list_topics.tpl', tra( 'Message Board Threads: ' . $gContent->getField('title') ) , [ 'display_mode' => 'display' ]);
+$gBitSystem->display( 'bitpackage:boards/list_topics.tpl', KernelTools::tra( 'Message Board Threads: ' . $gContent->getField('title') ) , [ 'display_mode' => 'display' ]);

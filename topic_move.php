@@ -7,6 +7,7 @@
 /**
  * required setup
  */
+use Bitweaver\KernelTools;
 require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
@@ -36,7 +37,7 @@ if( isset( $_REQUEST["target"] ) ) {
 	}
 
 	if( $gContent->moveTo($_REQUEST["target"]) ) {
-		bit_redirect( $gContent->getDisplayUrl() );
+		KernelTools::bit_redirect( $gContent->getDisplayUrl() );
 	} else {
 		$gBitSystem->fatalError( "There was an error moving the topic: ".vc( $gContent->mErrors ));
 	}
@@ -48,5 +49,5 @@ $gBitSmarty->assign('boards', $boards);
 
 $gBitSmarty->assign('fromBoardId', $board->mContentId);
 
-$gBitSystem->display( 'bitpackage:boards/topic_move.tpl', tra('Move Topic').':'.$gContent->getTitle(), [ 'display_mode' => 'display' ]);
+$gBitSystem->display( 'bitpackage:boards/topic_move.tpl', KernelTools::tra('Move Topic').':'.$gContent->getTitle(), [ 'display_mode' => 'display' ]);
 ?>

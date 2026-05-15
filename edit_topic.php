@@ -12,6 +12,7 @@
  * required setup
  */
 use \Bitweaver\Boards\BitBoard;
+use Bitweaver\KernelTools;
 require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
@@ -22,7 +23,7 @@ require_once( BOARDS_PKG_INCLUDE_PATH.'lookup_inc.php' );
 
 // Make sure topic exists since we only run through here for existing topics. New topics are created via comment system.
 if( !$gContent->isValid() ){
-	$gBitSystem->fatalError( tra('No topic specified.') );
+	$gBitSystem->fatalError( KernelTools::tra('No topic specified.') );
 }
 
 // Check the user's ticket
@@ -49,7 +50,7 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 }elseif( isset( $_REQUEST['remove'] ) ) {
 	// Check permissions to edit this topic if the root object is the board check its perms, otherwise check general comment admin perms
 	if( !(( $gContent->mInfo['root_id'] == $gContent->mInfo['board_content_id'] && $board->hasAdminPermission() ) || $gBitUser->hasPermission('p_liberty_admin_comments')) ){
-		$gBitSystem->fatalError( tra('You do not have permission to delete this topic.') );
+		$gBitSystem->fatalError( KernelTools::tra('You do not have permission to delete this topic.') );
 	}
 
 	if( !empty( $_REQUEST['cancel'] ) ) {
@@ -59,8 +60,8 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 		$formHash['t'] = $_REQUEST['t'];
 		$gBitSystem->confirmDialog( $formHash,
 			[
-				'warning' => tra( 'Are you sure you want to delete this topic?' ) . ' ' . $gContent->getTitle(),
-				'error' => tra('This cannot be undone!'),
+				'warning' => KernelTools::tra( 'Are you sure you want to delete this topic?' ) . ' ' . $gContent->getTitle(),
+				'error' => KernelTools::tra('This cannot be undone!'),
 			],
 		);
 	} else {
@@ -70,7 +71,7 @@ if( isset($_REQUEST['is_locked']) || isset($_REQUEST['is_sticky']) ){
 			$gBitSmarty->assign( 'errors', $topicAsComment->mErrors );
 		}
 		// send us back to the baord - http_referer won't work with confirm process
-		bit_redirect( BOARDS_PKG_URL.'index.php?b='. $gContent->mInfo['board_id'] );
+		KernelTools::bit_redirect( BOARDS_PKG_URL.'index.php?b='. $gContent->mInfo['board_id'] );
 	}
 // User pref options on a topic - not really editing but this simplifies topic related processes putting it here
 }elseif( isset($_REQUEST['new']) || isset($_REQUEST['notify']) ){

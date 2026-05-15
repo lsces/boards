@@ -11,6 +11,7 @@
 /**
  * required setup
  */
+use Bitweaver\KernelTools;
 require_once '../kernel/includes/setup_inc.php';
 
 // Is package installed and enabled
@@ -36,11 +37,11 @@ if( isset( $_REQUEST['remove'] ) ) {
 		if( empty( $_REQUEST['confirm'] ) ) {
 			$formHash['b'] = $_REQUEST['b'];
 			$formHash['remove'] = true;
-			$gBitSystem->confirmDialog( $formHash, [ 'warning' => tra( 'Are you sure you want to remove the entire message board' ).' "'.$gContent->getTitle().'" ?', 'error' => 'This cannot be undone!' ] );
+			$gBitSystem->confirmDialog( $formHash, [ 'warning' => KernelTools::tra( 'Are you sure you want to remove the entire message board' ).' "'.$gContent->getTitle().'" ?', 'error' => 'This cannot be undone!' ] );
 		} elseif( !$gContent->expunge() ) {
 			$gBitSmarty->assign( 'errors', $deleteComment->mErrors );
 		} else {
-			bit_redirect( BOARDS_PKG_URL.'index.php' );
+			KernelTools::bit_redirect( BOARDS_PKG_URL.'index.php' );
 		}
 	} else {
 		$gBitSystem->fatalPermission( 'p_boards_remove' );
@@ -67,12 +68,12 @@ if( !empty( $_REQUEST["save_bitboard"] ) ) {
 	// disabled
 	if( $gContent->store( $storeHash ) ) {
 		$gContent->storePreference( 'board_sync_list_address', (!empty( $_REQUEST['bitboardconfig']['board_sync_list_address'] ) ?  $_REQUEST['bitboardconfig']['board_sync_list_address'] : null) );
-		bit_redirect( $gContent->getDisplayUrl() );
+		KernelTools::bit_redirect( $gContent->getDisplayUrl() );
 	} else {
 		$gBitSmarty->assign( 'errors', $gContent->mErrors );
 	}
 }
 
 // Display the template
-$gBitSystem->display( 'bitpackage:boards/board_edit.tpl', tra('Board') , [ 'display_mode' => 'edit' ]);
+$gBitSystem->display( 'bitpackage:boards/board_edit.tpl', KernelTools::tra('Board') , [ 'display_mode' => 'edit' ]);
 ?>

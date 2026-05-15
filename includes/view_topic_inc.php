@@ -12,16 +12,17 @@ use Bitweaver\HttpStatusCodes;
 use Bitweaver\Boards\BitBoard;
 use Bitweaver\Boards\BitBoardTopic;
 use Bitweaver\Boards\BitBoardPost;
+use Bitweaver\KernelTools;
 require_once '../kernel/includes/setup_inc.php';
 
 // if we're getting a migrate id then lets move on right away
 if( BitBase::verifyId( $_REQUEST['migrate_topic_id'] ?? 0 ) ) {
 	if( $_REQUEST['t'] = BitBoardTopic::lookupByMigrateTopic( $_REQUEST['migrate_topic_id'] ) ) {
-		bit_redirect( BOARDS_PKG_URL.'index.php?t='. $_REQUEST['t'] );
+		KernelTools::bit_redirect( BOARDS_PKG_URL.'index.php?t='. $_REQUEST['t'] );
 	}
 } elseif( BitBase::verifyId( $_REQUEST['migrate_post_id'] ?? 0 ) ) {
 	if( $_REQUEST['t'] = BitBoardTopic::lookupByMigratePost( $_REQUEST['migrate_post_id'] ) ) {
-		bit_redirect( BOARDS_PKG_URL.'index.php?t='. $_REQUEST['t'] );
+		KernelTools::bit_redirect( BOARDS_PKG_URL.'index.php?t='. $_REQUEST['t'] );
 	}
 }
 
@@ -34,7 +35,7 @@ if (!empty($_REQUEST['action'])) {
 	$comment = new BitBoardPost($_REQUEST['comment_id']);
 	$comment->loadComment();
 	if (!$comment->isValid()) {
-		$gBitSystem->fatalError( tra("Invalid Comment"), null, null, HttpStatusCodes::HTTP_GONE );
+		$gBitSystem->fatalError( KernelTools::tra("Invalid Comment"), null, null, HttpStatusCodes::HTTP_GONE );
 	}
 	switch ($_REQUEST['action']) {
 		case 1:
@@ -59,7 +60,7 @@ $thread = new BitBoardTopic($_REQUEST['t']);
 $thread->load();
 
 if( !$thread->isValid() ) {
-	$gBitSystem->fatalError( tra("Unknown discussion"), null, null, HttpStatusCodes::HTTP_GONE );
+	$gBitSystem->fatalError( KernelTools::tra("Unknown discussion"), null, null, HttpStatusCodes::HTTP_GONE );
 }
 
 $thread->verifyViewPermission();
@@ -76,9 +77,9 @@ $gBitSmarty->assign('gContent', $gContent);
 if (empty($thread->mInfo['th_root_id'])) {
 	if ($_REQUEST['action']==3) {
 		//Invalid as a result of rejecting the post, redirect to the board
-		bit_redirect( $gBoard->getDisplayUrl() );
+		KernelTools::bit_redirect( $gBoard->getDisplayUrl() );
 	} else {
-		$gBitSystem->fatalError(tra( "Invalid topic selection." ), null, null, HttpStatusCodes::HTTP_GONE );
+		$gBitSystem->fatalError(KernelTools::tra( "Invalid topic selection." ), null, null, HttpStatusCodes::HTTP_GONE );
 	}
 }
 

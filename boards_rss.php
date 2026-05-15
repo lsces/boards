@@ -5,6 +5,8 @@
  * @subpackage functions
  */
 
+use Bitweaver\Users\RoleUser;
+
 /**
  * Initialization
  */
@@ -100,7 +102,7 @@ foreach( $feeds as $feed ) {
 			$item->link = 'http://'.$_SERVER['HTTP_HOST'].BIT_ROOT_URL.'index.php?content_id='.$feed['content_id']; //comment paths are tricky, but work automagically through the front door
 			$item->description =  $feed['parsed_data'];
 			$item->date = ( int )$feed['last_modified'];
-			$user = new BitUser($feed['user_id']);
+			$user = new RoleUser($feed['user_id']);
 			break;
 		case 'bitboard':
 		default:
@@ -122,7 +124,7 @@ foreach( $feeds as $feed ) {
 			//TODO allow proper sort order
 			//$item->date = ( int )$feed['event_date'];
 			$item->date = ( int )$feed['llc_last_modified'];
-			$user = new BitUser($feed['llc_user_id']);
+			$user = new RoleUser($feed['llc_user_id']);
 			break;
 	}
 

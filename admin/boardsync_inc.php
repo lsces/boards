@@ -1,4 +1,6 @@
 <?php
+use Bitweaver\Users\RolePermUser;
+
 function board_sync_run($pLog = false) {
 	global $gBitUser, $gBitSystem;
 
@@ -399,8 +401,7 @@ function board_sync_process_message( $pMbox, $pMsgNum, $pMsgHeader, $pMsgStructu
 
 					// Load the message sending user
 					if( $userInfo['user_id'] != ANONYMOUS_USER_ID ) {
-						$userClass = $gBitSystem->getConfig( 'user_class', 'BitPermUser' );
-						$newBitUser = new $userClass( $userInfo['user_id'] );
+						$newBitUser = new RolePermUser( $userInfo['user_id'] );
 						$newBitUser->load( true );
 					}
 					if( !empty( $newBitUser ) && $newBitUser->isValid() ){

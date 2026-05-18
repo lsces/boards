@@ -1,7 +1,6 @@
 {if $gBitSystem->getActivePackage() == 'boards'}
 	<script>/* <![CDATA[ */
 		{literal}
-		/* DEPENDENCIES: MochiKit Base Async, BitAjax */
 		BitBoards = {
 			/* this is called from flipswitch.tpl */
 			"flipName": function( url, elm ){
@@ -11,14 +10,14 @@
 			},
 			
 			/* this is called from post_display.tpl */
-			"warn":function( elmid, caller ){
-				var oldonclick = caller.onclick;
-				document.getElementById( elmid ).style['display']='inline';
-				caller.onclick = function() {
-					document.getElementById( elmid ).style['display']='none';
-					caller.onclick = oldonclick;
-					return false;
+			"warn": function( elmid, url, caller ) {
+				var $elm = $( '#' + elmid );
+				if( !$.trim( $elm.html() ) ) {
+					$.get( url ).done( function( html ) { $elm.html( html ); } );
 				}
+				$elm.show();
+				var prev = caller.onclick;
+				caller.onclick = function() { $elm.hide(); caller.onclick = prev; return false; };
 				return false;
 			},
 			

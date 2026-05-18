@@ -123,7 +123,4 @@ if (!empty($_REQUEST['warning'])) {
 }
 $gBitSmarty->assign('warnings',$warnings);
 
-// ajax support
-$gBitThemes->loadAjax( 'mochikit' );
-
 $gBitSystem->display('bitpackage:boards/list_posts.tpl', "Show Thread: " . $thread->getField('title') , [ 'display_mode' => 'display' ]);

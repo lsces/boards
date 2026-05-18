@@ -91,40 +91,14 @@
 		{include file="bitpackage:liberty/services_inc.tpl" serviceLocation='comment' serviceHash=$comment}
 
 		{if $gBitUser->isRegistered() and $comment.is_warned}
+			{assign var=comment_id value=$comment.comment_id}
 			<div class="warning">
-				{assign var=comment_id value=$comment.comment_id}
-				<a onclick="
-					var e = document.getElementById('warned_message_{$comment.comment_id|escape:"url"}');
-					var url = '{$smarty.const.BOARDS_PKG_URL}ajax.php?req=10&comment_id={$comment_id}&amp;seq=' + new Date().getTime();
-					var element = 'warned_message_{$comment.comment_id|escape:"url"}';
-					var params = null;
-					{literal}
-						var ajax = new Ajax.Updater(
-						{success: element},
-						url, {method: 'get', parameters: params, onFailure: reportError}
-						);
-					{/literal}
-					e.style.display='block';
-					this.oldonclick=this.onclick;
-					this.onclick=new Function('
-							document.getElementById(\'warned_message_{$comment.comment_id|escape:"url"}\').style.display=\'none\';
-							this.onclick=this.oldonclick;
-							return false;
-						');
-					return false;
-					" href="{$thread_mInfo.display_url}&amp;warning[{$comment_id}]={if empty($warnings.$comment_id)}show{else}hide{/if}"
+				<a onclick="return BitBoards.warn('warned_message_{$comment.comment_id|escape:"url"}', '{$smarty.const.BOARDS_PKG_URL}ajax.php?req=10&amp;comment_id={$comment_id}', this)"
+				   href="{$thread_mInfo.display_url}&amp;warning[{$comment_id}]={if empty($warnings.$comment_id)}show{else}hide{/if}"
 				>{booticon ipackage="icons" iname="icon-warning-sign" iexplain="Warned Post"}</a>
-
-				<div id="warned_message_{$comment.comment_id|escape:"url"}">
+				<div id="warned_message_{$comment.comment_id|escape:"url"}" style="{if empty($warnings.$comment_id)}display:none{/if}">
 					{if !empty($warnings.$comment_id)}{$comment.warned_message}{/if}
 				</div>
-
-				{if empty($warnings.$comment_id)}
-					<script>/*<![CDATA[*/
-						var warned_message_{$comment.comment_id|escape:"url"} = document.getElementById('warned_message_{$comment.comment_id|escape:"url"}');
-						warned_message_{$comment.comment_id|escape:"url"}.style.display='none';
-					/*]]>*/</script>
-				{/if}
 			</div>
 		{/if}
 

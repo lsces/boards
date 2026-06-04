@@ -36,7 +36,7 @@
 			</label>
 		{/form}
 		{if $gBitSystem->isPackageActive( 'rss' )}
-			<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?t={$smarty.request.t}">{booticon iname="icon-rss"  ipackage="icons"  iexplain="Get RSS Feed"}</a>
+			<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?t={$smarty.request.t}">{biticon ipackage="icons" iname="network-transmit"  ipackage="icons"  iexplain="Get RSS Feed"}</a>
 		{/if}
 		{assign var=flip value=$thread->getFlipFlop()}
 		{foreach from=$flip item=flip_s key=flip_name}
@@ -54,7 +54,7 @@
 	<div class="body">
 		{if !$topic_locked and $board->hasPostCommentsPermission()}
 			<div class="form-group submit">
-				<a title="Post Reply" class="btn btn-default" href="{$comments_return_url}&amp;post_comment_reply_id={$thread->mInfo.flc_content_id}&amp;post_comment_request=1#editcomments">{booticon iname="icon-comment-alt"  ipackage="icons"  iexplain="Post Reply" iforce="icon"} Post Reply</a>
+				<a title="Post Reply" class="btn btn-default" href="{$comments_return_url}&amp;post_comment_reply_id={$thread->mInfo.flc_content_id}&amp;post_comment_request=1#editcomments">{biticon ipackage="icons" iname="internet-group-chat"  ipackage="icons"  iexplain="Post Reply" iforce="icon"} Post Reply</a>
 			</div>
 		{/if}
 
@@ -82,7 +82,7 @@
 
 		{if !$topic_locked and $board->hasPostCommentsPermission()}
 			<div class="form-group submit">
-				<a title="Post Reply" class="btn btn-default" href="{$comments_return_url}&amp;post_comment_reply_id={$thread->mInfo.flc_content_id}&amp;post_comment_request=1#editcomments">{booticon iname="icon-comment-alt"  ipackage="icons"  iexplain="Post Reply" iforce="icon"} Post Reply</a>
+				<a title="Post Reply" class="btn btn-default" href="{$comments_return_url}&amp;post_comment_reply_id={$thread->mInfo.flc_content_id}&amp;post_comment_request=1#editcomments">{biticon ipackage="icons" iname="internet-group-chat"  ipackage="icons"  iexplain="Post Reply" iforce="icon"} Post Reply</a>
 			</div>
 		{/if}
 

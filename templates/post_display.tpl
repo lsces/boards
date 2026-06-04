@@ -27,29 +27,29 @@
 			<div class="floaticon">
 				{if $print_page ne 'y' and $comment.deleted==0 }
 					{if !$topic_locked and $board->hasPostCommentsPermission()}
-						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{booticon iname="icon-comment-alt"  ipackage="icons"  iexplain="Reply to this Post" iforce="icon"}</a>
+						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{biticon ipackage="icons" iname="internet-group-chat"  ipackage="icons"  iexplain="Reply to this Post" iforce="icon"}</a>
 					{/if}
 					{if !$topic_locked and $board->hasPostCommentsPermission()}
-						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1&amp;quote=y#editcomments" rel="nofollow">{booticon ipackage="icons" iname="icon-comment" iexplain="Reply with Quote to this Post" iforce="icon"}</a>
+						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1&amp;quote=y#editcomments" rel="nofollow">{biticon ipackage="icons" iname="internet-group-chat" iexplain="Reply with Quote to this Post" iforce="icon"}</a>
 					{/if}
 					{if $comment.is_editable or $gContent->hasUserPermission('p_liberty_edit_comments')}
-						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{booticon iname="icon-edit" ipackage="icons" iexplain="Edit" iforce="icon"}</a>
+						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{biticon ipackage="icons" iname="document-properties" ipackage="icons" iexplain="Edit" iforce="icon"}</a>
 					{/if}
 					{if $board->hasUserPermission( 'p_liberty_admin_comments' )}
-						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{booticon iname="icon-trash" ipackage="icons" iexplain="Remove" iforce="icon"}</a>
+						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{biticon ipackage="icons" iname="edit-delete" ipackage="icons" iexplain="Remove" iforce="icon"}</a>
 					{/if}
 					{if $board->hasUpdatePermission() and (($comment.user_id<0 and $comment.is_approved==0)or$comment.user_id>=0) and !$comment.is_warned}
 						{if $comment.user_id<0 and $comment.is_approved==0}
 							<a title="Approve this post" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=1&amp;comment_id={$comment.comment_id}">
-								{booticon iname="icon-plus-sign"  ipackage="icons"  iexplain="Approve Post" iforce="icon"}
+								{biticon ipackage="icons" iname="list-add"  ipackage="icons"  iexplain="Approve Post" iforce="icon"}
 							</a>
 
 							<a title="Reject this post" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=2&amp;comment_id={$comment.comment_id}">
-								{booticon iname="icon-minus-sign"  ipackage="icons"  iexplain="Reject Post" iforce="icon"}
+								{biticon ipackage="icons" iname="list-remove"  ipackage="icons"  iexplain="Reject Post" iforce="icon"}
 							</a>
 						{elseif !$comment.is_warned and $comment.user_id>=0}
 							<a onclick="return BitBoards.warn( 'warn_block_{$comment.comment_id|escape:"url"}', this )" title="Warn the poster about this post" href="{$smarty.const.BOARDS_PKG_URL}view_topic_inc.php?t={$thread->mRootId}&amp;action=3&amp;comment_id={$comment.comment_id}">
-								{booticon iname="icon-warning-sign"  ipackage="icons"  iexplain="Warn Post" iforce="icon"}
+								{biticon ipackage="icons" iname="dialog-warning"  ipackage="icons"  iexplain="Warn Post" iforce="icon"}
 							</a>
 
 							<div class="warn_block" style="display:none;" id="warn_block_{$comment.comment_id|escape:"url"}">
@@ -95,7 +95,7 @@
 			<div class="warning">
 				<a onclick="return BitBoards.warn('warned_message_{$comment.comment_id|escape:"url"}', '{$smarty.const.BOARDS_PKG_URL}ajax.php?req=10&amp;comment_id={$comment_id}', this)"
 				   href="{$thread_mInfo.display_url}&amp;warning[{$comment_id}]={if empty($warnings.$comment_id)}show{else}hide{/if}"
-				>{booticon ipackage="icons" iname="icon-warning-sign" iexplain="Warned Post"}</a>
+				>{biticon ipackage="icons" iname="dialog-warning" iexplain="Warned Post"}</a>
 				<div id="warned_message_{$comment.comment_id|escape:"url"}" style="{if empty($warnings.$comment_id)}display:none{/if}">
 					{if !empty($warnings.$comment_id)}{$comment.warned_message}{/if}
 				</div>

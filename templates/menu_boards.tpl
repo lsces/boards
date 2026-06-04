@@ -2,11 +2,11 @@
 {if !empty($packageMenuTitle)}<a class="dropdown-toggle" data-toggle="dropdown" href="#"> {$packageMenuTitle} <b class="caret"></b></a>{/if}
 <ul class="{$packageMenuClass}">
 		{if $gBitUser->hasPermission( 'p_boards_read')}
-			<li><a class="item" href="{$smarty.const.BOARDS_PKG_URL}index.php">{booticon iname="icon-home" ipackage="icons" iexplain="Browse `$smarty.const.BOARDS_PKG_DIR`" ilocation=menu}</a></li>
+			<li><a class="item" href="{$smarty.const.BOARDS_PKG_URL}index.php">{biticon ipackage="icons" iname="go-home" ipackage="icons" iexplain="Browse `$smarty.const.BOARDS_PKG_DIR`" ilocation=menu}</a></li>
 		{/if}
 		{if $gBitUser->hasPermission( 'p_boards_create')}
-			<li><a class="item" href="{$smarty.const.BOARDS_PKG_URL}edit.php">{booticon iname="icon-folder-close"   ipackage="icons" iexplain="Create new `$smarty.const.BOARDS_PKG_DIR`" ilocation=menu}</a></li>
-			<li><a class="item" href="{$smarty.const.BOARDS_PKG_URL}assign.php">{booticon iname="icon-circle-arrow-right"   ipackage="icons" iexplain="Assign to `$smarty.const.BOARDS_PKG_DIR`" ilocation=menu}</a></li>
+			<li><a class="item" href="{$smarty.const.BOARDS_PKG_URL}edit.php">{biticon ipackage="icons" iname="folder"   ipackage="icons" iexplain="Create new `$smarty.const.BOARDS_PKG_DIR`" ilocation=menu}</a></li>
+			<li><a class="item" href="{$smarty.const.BOARDS_PKG_URL}assign.php">{biticon ipackage="icons" iname="go-next"   ipackage="icons" iexplain="Assign to `$smarty.const.BOARDS_PKG_DIR`" ilocation=menu}</a></li>
 		{/if}
 	</ul>
 {/strip}

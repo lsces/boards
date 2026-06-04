@@ -68,7 +68,7 @@
 						<td style="white-space:nowrap;">{* topic status icons *}
 
 							{if $thread.th_moved>0}
-								{biticon ipackage="icons" iname="emblem-shared" iexplain="Moved Topic"}
+								{biticon ipackage="icons" iname="emblem-symbolic-link" iexplain="Moved Topic"}
 							{else}
 								{assign var=flip value=$thread.flip}
 								{foreach from=$flip item=flip_s key=flip_name}
@@ -108,7 +108,7 @@
 								{if $thread.th_moved==0 and $board->hasAdminPermission()}
 									{*smartlink ititle="Edit" ifile="edit.php" ibiticon="liberty/edit" board_id=$thread.board_id*}
 									<a href="{$smarty.const.BOARDS_PKG_URL}topic_move.php?t={$thread.th_thread_id|escape:"url"}"
-										title="Move Thread">{biticon ipackage="icons" iname="emblem-shared" iexplain="Move Thread" iforce="icon"}
+										title="Move Thread">{biticon ipackage="icons" iname="emblem-symbolic-link" iexplain="Move Thread" iforce="icon"}
 									</a> <a title="Delete Topic" href="{$smarty.const.BOARDS_PKG_URL}edit_topic.php?remove=1&amp;t={$thread.th_thread_id|escape:"url"}">{biticon ipackage="icons" iname="edit-delete" ipackage="icons" iexplain="Delete Thread" iforce="icon"}</a>
 								{/if}
 							</td>

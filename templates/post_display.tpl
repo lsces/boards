@@ -36,7 +36,7 @@
 						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{biticon ipackage="icons" iname="document-properties" ipackage="icons" iexplain="Edit" iforce="icon"}</a>
 					{/if}
 					{if $board->hasUserPermission( 'p_liberty_admin_comments' )}
-						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{biticon ipackage="icons" iname="edit-delete" ipackage="icons" iexplain="Remove" iforce="icon"}</a>
+						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{biticon ipackage="icons" iname="user-trash" ipackage="icons" iexplain="Remove" iforce="icon"}</a>
 					{/if}
 					{if $board->hasUpdatePermission() and (($comment.user_id<0 and $comment.is_approved==0)or$comment.user_id>=0) and !$comment.is_warned}
 						{if $comment.user_id<0 and $comment.is_approved==0}

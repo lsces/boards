@@ -22,7 +22,7 @@
 				<a title="Edit message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?b={$board->mInfo.board_id}">{biticon ipackage="icons" iname="document-properties" ipackage="icons" iexplain="Edit Message Board"}</a>
 			{/if}
 			{if $board->hasUserPermission( 'p_boards_remove', true, true )}
-				<a title="Remove message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?remove=1&amp;b={$board->mInfo.board_id}">{biticon ipackage="icons" iname="edit-delete" ipackage="icons" iexplain="Remove Message Board"}</a>
+				<a title="Remove message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?remove=1&amp;b={$board->mInfo.board_id}">{biticon ipackage="icons" iname="user-trash" ipackage="icons" iexplain="Remove Message Board"}</a>
 			{/if}
 		{/if}<!-- end print_page -->
 		{*if $board->hasPostCommentsPermission()}
@@ -109,7 +109,7 @@
 									{*smartlink ititle="Edit" ifile="edit.php" ibiticon="liberty/edit" board_id=$thread.board_id*}
 									<a href="{$smarty.const.BOARDS_PKG_URL}topic_move.php?t={$thread.th_thread_id|escape:"url"}"
 										title="Move Thread">{biticon ipackage="icons" iname="emblem-symbolic-link" iexplain="Move Thread" iforce="icon"}
-									</a> <a title="Delete Topic" href="{$smarty.const.BOARDS_PKG_URL}edit_topic.php?remove=1&amp;t={$thread.th_thread_id|escape:"url"}">{biticon ipackage="icons" iname="edit-delete" ipackage="icons" iexplain="Delete Thread" iforce="icon"}</a>
+									</a> <a title="Delete Topic" href="{$smarty.const.BOARDS_PKG_URL}edit_topic.php?remove=1&amp;t={$thread.th_thread_id|escape:"url"}">{biticon ipackage="icons" iname="user-trash" ipackage="icons" iexplain="Delete Thread" iforce="icon"}</a>
 								{/if}
 							</td>
 

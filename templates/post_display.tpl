@@ -33,7 +33,7 @@
 						<a href="{$comments_return_url}&amp;post_comment_reply_id={$comment.content_id}&amp;post_comment_request=1&amp;quote=y#editcomments" rel="nofollow">{biticon ipackage="icons" iname="internet-group-chat" iexplain="Reply with Quote to this Post" iforce="icon"}</a>
 					{/if}
 					{if $comment.is_editable or $gContent->hasUserPermission('p_liberty_edit_comments')}
-						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{biticon ipackage="icons" iname="document-properties" ipackage="icons" iexplain="Edit" iforce="icon"}</a>
+						<a href="{$comments_return_url}&amp;post_comment_id={$comment.comment_id}&amp;post_comment_request=1#editcomments" rel="nofollow">{biticon ipackage="icons" iname="edit" ipackage="icons" iexplain="Edit" iforce="icon"}</a>
 					{/if}
 					{if $board->hasUserPermission( 'p_liberty_admin_comments' )}
 						<a href="{$comments_return_url}&amp;delete_comment_id={$comment.comment_id}" rel="nofollow">{biticon ipackage="icons" iname="user-trash" ipackage="icons" iexplain="Remove" iforce="icon"}</a>

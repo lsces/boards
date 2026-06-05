@@ -19,7 +19,7 @@
 				<a title="Get RSS Feed" href="{$smarty.const.BOARDS_PKG_URL}rss.php?b={$smarty.request.b}">{biticon ipackage="icons" iname="network-transmit"  ipackage="icons" iexplain="Get RSS Feed"}</a>
 			{/if}
 			{if $board->hasUpdatePermission()}
-				<a title="Edit message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?b={$board->mInfo.board_id}">{biticon ipackage="icons" iname="document-properties" ipackage="icons" iexplain="Edit Message Board"}</a>
+				<a title="Edit message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?b={$board->mInfo.board_id}">{biticon ipackage="icons" iname="edit" ipackage="icons" iexplain="Edit Message Board"}</a>
 			{/if}
 			{if $board->hasUserPermission( 'p_boards_remove', true, true )}
 				<a title="Remove message board" href="{$smarty.const.BOARDS_PKG_URL}edit.php?remove=1&amp;b={$board->mInfo.board_id}">{biticon ipackage="icons" iname="user-trash" ipackage="icons" iexplain="Remove Message Board"}</a>

@@ -38,9 +38,9 @@ $tables = [
 	'boards_tracking' => "
 		user_id I4 NOTNULL,
 		topic_id C(10),
-		track_date I4 NOTNULL DEFAULT(0),
+		track_date I8 NOTNULL DEFAULT(0),
 		notify I1 NOTNULL DEFAULT(0),
-		notify_date I4 NOTNULL DEFAULT(0)
+		notify_date I8 NOTNULL DEFAULT(0)
 	",
 ];
 

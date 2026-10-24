@@ -36,8 +36,8 @@
 					{textarea noformat=1 label="Comment" id="commentpost" name="comment_data" rows="6" edit=$postComment.data}
 
 					<div class="form-group submit">
-						<input type="submit" class="btn btn-default" name="post_comment_preview" value="Preview"/>&nbsp;
-						<input type="submit" class="btn btn-default" name="post_comment_submit" value="Post"/>&nbsp;
+						<input type="submit" class="btn btn-default" name="post_comment_preview" value="Preview"/>
+						<input type="submit" class="btn btn-default" name="post_comment_submit" value="Post"/>
 						<input type="submit" class="btn btn-default" name="post_comment_cancel" value="Cancel"/>
 					</div>
 				{/legend}

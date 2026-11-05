@@ -54,7 +54,7 @@ function migrate_phpbb() {
 	}
 
 	if( empty( $_POST['Migrate'] )  ) {
-		print '<form method="POST"><input type="submit" name="Migrate" value="Migrate"/></form>';
+		print '<form method="POST"><input type="hidden" name="tk" value="'.$gBitUser->mTicket.'"/><input type="submit" name="Migrate" value="Migrate"/></form>';
 		die;
 	}
 
